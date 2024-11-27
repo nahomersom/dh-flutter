@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "560634987189",
+    "project_id": "dh-api-3c968",
+    "storage_bucket": "dh-api-3c968.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:560634987189:android:25c1bdcce29a7c4494b4fc",
+        "android_client_info": {
+          "package_name": "com.example.dh"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBC-tBoWK1trUa5ZDAWj8vG3aD9bi7zJPI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
