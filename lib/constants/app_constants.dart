@@ -18,6 +18,8 @@ class AppConstants {
   );
   // Colors
   static const Color primaryColor = Color(0xFF000080);
+  static const Color primaryAlternativeColor = Color(0xff4525A2);
+
   static const Color secondayColor = Color(0xFF371E81);
   static const Color lightSecondayColor = Color(0xFFEFECF8);
 

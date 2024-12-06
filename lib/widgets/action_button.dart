@@ -1,3 +1,4 @@
+import 'package:dh/constants/app_constants.dart';
 import 'package:flutter/material.dart';
 
 class ActionButton extends StatelessWidget {
@@ -14,14 +15,13 @@ class ActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const primaryColor = Color(0xFF4525A2);
     return SizedBox(
       width: double.infinity,
       child: isActionButton
           ? ElevatedButton(
               onPressed: onPressed,
               style: ElevatedButton.styleFrom(
-                backgroundColor: primaryColor,
+                backgroundColor: AppConstants.secondayColor,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12), // 12px radius
                 ),
@@ -38,7 +38,7 @@ class ActionButton extends StatelessWidget {
           : OutlinedButton(
               onPressed: onPressed,
               style: OutlinedButton.styleFrom(
-                side: const BorderSide(color: primaryColor),
+                side: const BorderSide(color: AppConstants.secondayColor),
                 backgroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12), // 12px radius
@@ -48,7 +48,7 @@ class ActionButton extends StatelessWidget {
               child: Text(
                 text,
                 style: const TextStyle(
-                  color: primaryColor,
+                  color: AppConstants.secondayColor,
                   fontWeight: FontWeight.bold,
                 ),
               ),

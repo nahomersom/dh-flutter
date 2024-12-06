@@ -6,6 +6,8 @@ class AppAssets {
   static String apple = "assets/images/svg/apple.svg";
   static String outlook = "assets/images/svg/outlook.svg";
   static String dhLogo = "assets/images/svg/dh.svg";
+  static String dhLogoTwo = "assets/images/dh_logo.png";
+
   static String search = "assets/images/svg/search.svg";
   static String pin = "assets/images/svg/pin.svg";
   static String task = "assets/images/svg/task.svg";

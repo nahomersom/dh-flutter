@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 import 'dart:async';
 
+import 'package:dh/main.dart';
 import 'package:dh/model/models.dart';
 import 'package:dh/repository/repositories.dart';
 import 'package:dh/routes/custom_page_route.dart';
@@ -9,6 +10,7 @@ import 'package:dh/utils/socket_connection.dart';
 import 'package:dh/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -29,10 +31,6 @@ class _InitalScreenState extends State<InitalScreen>
   User? user;
   @override
   void initState() {
-    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-      statusBarColor: AppConstants.primaryColor,
-      statusBarIconBrightness: Brightness.light,
-    ));
     _controller = AnimationController(
       duration: const Duration(milliseconds: 500),
       vsync: this,
@@ -100,23 +98,22 @@ class _InitalScreenState extends State<InitalScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppConstants.primaryColor,
-      body: Center(
-        child: AnimatedBuilder(
-            animation: _animation,
-            builder: (context, child) {
-              return Transform.translate(
-                offset: _animation.value,
-                child: Opacity(
-                  opacity: _controller.value,
-                  child: SvgPicture.asset(AppAssets.dhLogo,
-                      colorFilter: const ColorFilter.mode(
-                        Colors.white,
-                        BlendMode.srcATop,
-                      )),
-                ),
-              );
-            }),
+      body: Padding(
+        padding: EdgeInsets.symmetric(vertical: 120.sp, horizontal: 120.sp),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center, // Centers horizontally
+          children: [
+            AnimatedBuilder(
+              animation: _animation,
+              builder: (context, child) {
+                return Transform.translate(
+                  offset: _animation.value,
+                  child: Image.asset(AppAssets.dhLogoTwo),
+                );
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

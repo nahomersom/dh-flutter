@@ -12,6 +12,7 @@ import 'package:dh/firebase_options.dart';
 import 'package:dh/repository/chat_repositor.dart';
 import 'package:dh/repository/repositories.dart';
 import 'package:dh/screens/auth/forget_password.dart';
+import 'package:dh/screens/on_boarding/on_boarding_screen.dart';
 import 'package:dh/utils/config.dart';
 import 'package:dh/utils/helper.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -208,7 +209,7 @@ class MyApp extends StatelessWidget {
                   colorScheme:
                       ColorScheme.fromSeed(seedColor: Colors.deepPurple),
                 ),
-                home: const ForgetPasswordScreen(),
+                home: const InitalScreen(),
               );
             }));
   }
