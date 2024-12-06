@@ -3,6 +3,11 @@ import 'constants.dart';
 
 class AppConstants {
   // Fonts
+  static const TextStyle largeTitleTextStyle = TextStyle(
+    fontSize: 30,
+    fontWeight: FontWeight.bold,
+    color: secondayColor,
+  );
   static const TextStyle titleTextStyle = TextStyle(
     fontSize: 24,
     fontWeight: FontWeight.bold,
@@ -13,6 +18,9 @@ class AppConstants {
   );
   // Colors
   static const Color primaryColor = Color(0xFF000080);
+  static const Color secondayColor = Color(0xFF371E81);
+  static const Color lightSecondayColor = Color(0xFFEFECF8);
+
   static const Color primaryColorLight = Color(0xFF65D48D);
   static const Color primaryColorVeryLight = Color.fromARGB(255, 226, 233, 240);
   static const Color black = Color(0xFF1F2C37);
@@ -23,6 +31,9 @@ class AppConstants {
   static const Color grey400 = Color(0xFFBDBDBD);
   static const Color grey500 = Color(0xFF9CA4AB);
   static const Color grey600 = Color(0xFF757575);
+  static const Color grey800 = Color(0xFF2b2b2c);
+  static const Color grey900 = Color(0xFF515152);
+
   static const Color iconColor = Color(0xFF625F5F);
   static const Color grey700 = Color(0xFF000000);
   static const Color backgroundColor = Color(0xFFFDFDFD);
@@ -44,6 +55,8 @@ class AppConstants {
   static const EdgeInsets smallPadding = EdgeInsets.all(8.0);
   static const EdgeInsets mediumPadding = EdgeInsets.all(16.0);
   static const EdgeInsets largePadding = EdgeInsets.all(24.0);
+  static const EdgeInsets bodyPadding = EdgeInsets.all(25.0);
+
   // Label Styles
   static const TextStyle labelTextStyle = TextStyle(
     fontSize: 18,
@@ -51,6 +64,5 @@ class AppConstants {
     color: Colors.black,
   );
 
-   
   static var timeout = Duration(seconds: time_out);
 }

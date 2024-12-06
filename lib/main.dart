@@ -11,6 +11,8 @@ import 'package:dh/bloc/task_bloc/task_bloc.dart';
 import 'package:dh/firebase_options.dart';
 import 'package:dh/repository/chat_repositor.dart';
 import 'package:dh/repository/repositories.dart';
+import 'package:dh/screens/auth/forget_password.dart';
+import 'package:dh/utils/config.dart';
 import 'package:dh/utils/helper.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -18,6 +20,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'constants/constants.dart';
@@ -157,48 +160,56 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
-      providers: [
-        BlocProvider(
-          create: (context) => AuthBloc(authRepository: authRepository),
-        ),
-        BlocProvider(
-          create: (context) =>
-              OrganizationBloc(organizationRepository: organizationRepository),
-        ),
-        BlocProvider(
-          create: (context) => GroupsBloc(groupRepository: groupRepository),
-        ),
-        BlocProvider(
-          create: (context) => TaskBloc(taskRepository: taskRepository),
-        ),
-        BlocProvider(
-          create: (context) =>
-              NotificationBloc(notificationRepository: notificationRepository),
-        ),
-        BlocProvider(
-          create: (context) => ChatBloc(chatRepository: chatRepository),
-        ),
-      ],
-      child: MaterialApp(
-        title: 'DH',
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          primaryColor: AppConstants.primaryColor,
-          scaffoldBackgroundColor: AppConstants.backgroundColor,
-          primarySwatch: Colors.green,
-          // brightness: Brightness.dark,
-          useMaterial3: false,
-          appBarTheme: const AppBarTheme(
-              titleTextStyle: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: AppConstants.large),
-              elevation: 0),
-          textTheme: GoogleFonts.interTextTheme(),
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        ),
-        home: const InitalScreen(),
-      ),
-    );
+        providers: [
+          BlocProvider(
+            create: (context) => AuthBloc(authRepository: authRepository),
+          ),
+          BlocProvider(
+            create: (context) => OrganizationBloc(
+                organizationRepository: organizationRepository),
+          ),
+          BlocProvider(
+            create: (context) => GroupsBloc(groupRepository: groupRepository),
+          ),
+          BlocProvider(
+            create: (context) => TaskBloc(taskRepository: taskRepository),
+          ),
+          BlocProvider(
+            create: (context) => NotificationBloc(
+                notificationRepository: notificationRepository),
+          ),
+          BlocProvider(
+            create: (context) => ChatBloc(chatRepository: chatRepository),
+          ),
+        ],
+        child: ScreenUtilInit(
+            designSize: const Size(Config.uiW, Config.uiH),
+            minTextAdapt: true,
+            splitScreenMode: true,
+            builder: (_, child) {
+              return MaterialApp(
+                title: 'DH',
+                debugShowCheckedModeBanner: false,
+                theme: ThemeData(
+                  primaryColor: AppConstants.primaryColor,
+                  scaffoldBackgroundColor: AppConstants.backgroundColor,
+                  primarySwatch: Colors.green,
+                  // brightness: Brightness.dark,
+                  useMaterial3: false,
+                  fontFamily: 'CabinetGrotesk',
+
+                  appBarTheme: const AppBarTheme(
+                      titleTextStyle: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: AppConstants.large),
+                      elevation: 0),
+                  // textTheme: GoogleFonts.interTextTheme(),
+                  colorScheme:
+                      ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+                ),
+                home: const ForgetPasswordScreen(),
+              );
+            }));
   }
 }
