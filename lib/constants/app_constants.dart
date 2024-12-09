@@ -5,7 +5,7 @@ import 'constants.dart';
 class AppConstants {
   // Fonts
   static TextStyle largeTitleTextStyle = TextStyle(
-    fontSize: 30.sp,
+    fontSize: 28.sp,
     fontWeight: FontWeight.bold,
     color: secondayColor,
   );

@@ -114,46 +114,16 @@ class _SignUpByPhoneScreenState extends State<SignUpByPhoneScreen> {
                   const SizedBox(height: 30),
                 ],
               ),
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  children: [
-                    // Sign Up Button
-                    ActionButton(
-                      onPressed: isPhoneNumberValid
-                          ? () {
-                              // Handle valid phone number submission
-                              print('Phone: $_countryCode $_phoneNumber');
-                            }
-                          : null, // Disable button if invalid
-                      text: 'Sign Up',
-                      isActionButton: true,
-                    ),
-                    const SizedBox(height: 20),
-
-                    // Footer
-                    Center(
-                      child: RichText(
-                        text: TextSpan(
-                          text: 'Already have an account? ',
-                          style: AppConstants.bodyTextStyle.copyWith(
-                            color: AppConstants.grey800,
-                            fontSize: 14,
-                          ),
-                          children: [
-                            TextSpan(
-                              text: 'Log in here',
-                              style: AppConstants.bodyTextStyle.copyWith(
-                                  color: AppConstants.primaryAlternativeColor,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w700),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+              ActionButton(
+                onPressed: isPhoneNumberValid
+                    ? () {
+                        // Handle valid phone number submission
+                        print('Phone: $_countryCode $_phoneNumber');
+                      }
+                    : null, // Disable button if invalid
+                text: 'Sign Up',
+                isActionButton: true,
+                showBottomText: true,
               ),
             ],
           ),
