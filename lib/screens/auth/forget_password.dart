@@ -26,7 +26,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 30),
-                  const Text(
+                  Text(
                     'Forget Password?',
                     style: AppConstants.largeTitleTextStyle,
                   ),

@@ -11,6 +11,9 @@ import 'package:dh/bloc/task_bloc/task_bloc.dart';
 import 'package:dh/firebase_options.dart';
 import 'package:dh/repository/chat_repositor.dart';
 import 'package:dh/repository/repositories.dart';
+import 'package:dh/screens/auth%5Bv2%5D/otp_screen.dart';
+import 'package:dh/screens/auth%5Bv2%5D/profile_setup_screen.dart';
+import 'package:dh/screens/auth%5Bv2%5D/signup.dart';
 import 'package:dh/screens/auth/forget_password.dart';
 import 'package:dh/screens/on_boarding/on_boarding_screen.dart';
 import 'package:dh/utils/config.dart';
@@ -209,7 +212,7 @@ class MyApp extends StatelessWidget {
                   colorScheme:
                       ColorScheme.fromSeed(seedColor: Colors.deepPurple),
                 ),
-                home: const InitalScreen(),
+                home: ProfileSetupScreen(),
               );
             }));
   }

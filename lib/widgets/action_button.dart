@@ -15,13 +15,17 @@ class ActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool isDisabled = onPressed == null;
+
     return SizedBox(
       width: double.infinity,
       child: isActionButton
           ? ElevatedButton(
-              onPressed: onPressed,
+              onPressed: isDisabled ? null : onPressed,
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppConstants.secondayColor,
+                backgroundColor: isDisabled
+                    ? const Color(0xFFA5A5A6) // Disabled background color
+                    : AppConstants.secondayColor,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12), // 12px radius
                 ),
@@ -29,16 +33,21 @@ class ActionButton extends StatelessWidget {
               ),
               child: Text(
                 text,
-                style: const TextStyle(
+                style: TextStyle(
                   color: Colors.white,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                  fontWeight: isDisabled ? FontWeight.w700 : FontWeight.bold,
+                  // Reduce text opacity when disabled
+                  letterSpacing: isDisabled ? 0.5 : null,
                 ),
               ),
             )
           : OutlinedButton(
-              onPressed: onPressed,
+              onPressed: isDisabled ? null : onPressed,
               style: OutlinedButton.styleFrom(
-                side: const BorderSide(color: AppConstants.secondayColor),
+                side: BorderSide(
+                  color: AppConstants.secondayColor,
+                ),
                 backgroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12), // 12px radius
@@ -47,7 +56,7 @@ class ActionButton extends StatelessWidget {
               ),
               child: Text(
                 text,
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppConstants.secondayColor,
                   fontWeight: FontWeight.bold,
                 ),

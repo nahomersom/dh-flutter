@@ -1,20 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'constants.dart';
 
 class AppConstants {
   // Fonts
-  static const TextStyle largeTitleTextStyle = TextStyle(
-    fontSize: 30,
+  static TextStyle largeTitleTextStyle = TextStyle(
+    fontSize: 30.sp,
     fontWeight: FontWeight.bold,
     color: secondayColor,
   );
-  static const TextStyle titleTextStyle = TextStyle(
-    fontSize: 24,
+  static TextStyle titleTextStyle = TextStyle(
+    fontSize: 24.sp,
     fontWeight: FontWeight.bold,
   );
-  static const TextStyle bodyTextStyle = TextStyle(
-    fontSize: 16,
+  static TextStyle bodyTextStyle = TextStyle(
+    fontSize: 16.sp,
     fontWeight: FontWeight.normal,
+  );
+  static TextStyle bodySmallTextStyle = TextStyle(
+    fontSize: 14.sp,
+    fontWeight: FontWeight.w500,
   );
   // Colors
   static const Color primaryColor = Color(0xFF000080);
@@ -39,6 +44,8 @@ class AppConstants {
   static const Color iconColor = Color(0xFF625F5F);
   static const Color grey700 = Color(0xFF000000);
   static const Color backgroundColor = Color(0xFFFDFDFD);
+  static const Color lightTextColor = Color(0xFF2C2B2B);
+
   // Margins
   static const double smallMargin = 10.0;
   static const double mediumMargin = 16.0;

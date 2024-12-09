@@ -1,5 +1,6 @@
 import 'package:dh/constants/app_constants.dart';
 import 'package:dh/widgets/action_button.dart';
+import 'package:dh/widgets/language_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -11,15 +12,6 @@ class OnBoardingScreen extends StatefulWidget {
 }
 
 class _OnBoardingScreenState extends State<OnBoardingScreen> {
-  String _selectedLanguage = "English"; // Default language
-
-  final List<String> _languages = [
-    "English",
-    "Amharic",
-    "Oromiffa",
-    "Tigrigna",
-  ];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,38 +23,8 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
             children: [
               // Language Selector
               Padding(
-                padding: const EdgeInsets.only(top: 20.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    const Icon(Icons.language, color: Color(0xFF4525A2)),
-                    const SizedBox(width: 8),
-                    DropdownButton<String>(
-                      value: _selectedLanguage,
-                      icon: const Icon(Icons.arrow_drop_down,
-                          color: Color(0xFF4525A2)),
-                      underline:
-                          const SizedBox(), // Remove the default underline
-                      style: const TextStyle(
-                        color: Color(0xFF4525A2),
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                      items: _languages.map((String language) {
-                        return DropdownMenuItem<String>(
-                          value: language,
-                          child: Text(language),
-                        );
-                      }).toList(),
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          _selectedLanguage = newValue!;
-                        });
-                      },
-                    ),
-                  ],
-                ),
-              ),
+                  padding: const EdgeInsets.only(top: 20.0),
+                  child: LanguageSelector()),
               const SizedBox(height: 40),
               Text.rich(
                 TextSpan(
@@ -92,21 +54,21 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    FeatureCard(
+                    const FeatureCard(
                       icon: Icons.task_alt_outlined,
                       title: "Effortless Task Management",
                       description:
                           "Simplify task management with intuitive features.",
                     ),
                     SizedBox(height: 45.sp),
-                    FeatureCard(
+                    const FeatureCard(
                       icon: Icons.groups_outlined,
                       title: "Seamless Team Collaboration",
                       description:
                           "A unified space to streamline your workflow.",
                     ),
                     SizedBox(height: 45.sp),
-                    FeatureCard(
+                    const FeatureCard(
                       icon: Icons.forum_outlined,
                       title: "Effective Communication",
                       description:
