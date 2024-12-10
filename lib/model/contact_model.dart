@@ -1,4 +1,4 @@
-import 'package:contacts_service/contacts_service.dart';
+// import 'package:contacts_service/contacts_service.dart';
 
 class ContactModel {
   final String? displayName; // The name of the contact
@@ -9,10 +9,10 @@ class ContactModel {
     required this.phoneNumbers,
   });
 
-  factory ContactModel.fromContact(Contact contact) {
-    return ContactModel(
-      displayName: contact.displayName,
-      phoneNumbers: contact.phones?.map((phone) => phone.value!).toList(),
-    );
-  }
+  // factory ContactModel.fromContact(Contact contact) {
+  //   return ContactModel(
+  //     displayName: contact.displayName,
+  //     phoneNumbers: contact.phones?.map((phone) => phone.value!).toList(),
+  //   );
+  // }
 }

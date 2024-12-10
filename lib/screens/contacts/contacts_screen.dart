@@ -1,4 +1,4 @@
-import 'package:contacts_service/contacts_service.dart';
+// import 'package:contacts_service/contacts_service.dart';
 import 'package:dh/bloc/auth_bloc/auth_bloc.dart';
 import 'package:dh/model/models.dart';
 import 'package:dh/routes/custom_page_route.dart';
@@ -40,7 +40,7 @@ class _ContactsScreenState extends State<ContactsScreen> {
 
   Future<void> _loadContacts() async {
     await requestContactsPermission(); // Request permissiona
-    Iterable<Contact> fetchedContacts = await ContactsService.getContacts();
+    // Iterable<Contact> fetchedContacts = await ContactsService.getContacts();
 
     // setState(() {
     //   contacts = fetchedContacts.toList();
