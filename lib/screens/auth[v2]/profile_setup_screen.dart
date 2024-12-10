@@ -128,7 +128,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                     : null, // Disable the button when the form is invalid
                 text: 'Continue',
                 isActionButton: true,
-                showBottomText: true,
+                bottomButtonText: 'Log in',
               ),
             ),
           ],

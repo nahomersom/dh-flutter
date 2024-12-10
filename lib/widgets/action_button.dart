@@ -5,13 +5,13 @@ class ActionButton extends StatelessWidget {
   final VoidCallback? onPressed;
   final String text;
   final bool isActionButton;
-  final bool showBottomText;
+  final String? bottomButtonText;
   const ActionButton({
     Key? key,
     required this.onPressed,
     required this.text,
     required this.isActionButton,
-    this.showBottomText = false,
+    this.bottomButtonText,
   }) : super(key: key);
 
   @override
@@ -66,7 +66,7 @@ class ActionButton extends StatelessWidget {
                   ),
                 ),
         ),
-        if (showBottomText) ...[
+        if (bottomButtonText != null) ...[
           const SizedBox(height: 20),
           Center(
             child: RichText(
@@ -78,7 +78,7 @@ class ActionButton extends StatelessWidget {
                 ),
                 children: [
                   TextSpan(
-                    text: 'Log in here',
+                    text: '$bottomButtonText here',
                     style: AppConstants.bodyTextStyle.copyWith(
                       color: AppConstants.primaryAlternativeColor,
                       fontSize: 14,

@@ -11,12 +11,14 @@ import 'package:dh/bloc/task_bloc/task_bloc.dart';
 import 'package:dh/firebase_options.dart';
 import 'package:dh/repository/chat_repositor.dart';
 import 'package:dh/repository/repositories.dart';
+import 'package:dh/screens/auth%5Bv2%5D/forgot_password_phone_field.dart';
 import 'package:dh/screens/auth%5Bv2%5D/new_password.dart';
 import 'package:dh/screens/auth%5Bv2%5D/otp_screen.dart';
 import 'package:dh/screens/auth%5Bv2%5D/profile_picture.dart';
 import 'package:dh/screens/auth%5Bv2%5D/profile_setup_screen.dart';
 import 'package:dh/screens/auth%5Bv2%5D/signup.dart';
-import 'package:dh/screens/auth/forget_password.dart';
+import 'package:dh/screens/auth%5Bv2%5D/two_step_verification.dart';
+import 'package:dh/screens/auth%5Bv2%5D/forgot_password.dart';
 import 'package:dh/screens/on_boarding/on_boarding_screen.dart';
 import 'package:dh/utils/config.dart';
 import 'package:dh/utils/helper.dart';
@@ -30,6 +32,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'constants/constants.dart';
+import 'screens/auth[v2]/login.dart';
 import 'screens/screens.dart';
 
 void main() async {
@@ -214,7 +217,7 @@ class MyApp extends StatelessWidget {
                   colorScheme:
                       ColorScheme.fromSeed(seedColor: Colors.deepPurple),
                 ),
-                home: ProfilePictureScreen(),
+                home: ForgetPasswordPhoneFieldScreen(),
               );
             }));
   }

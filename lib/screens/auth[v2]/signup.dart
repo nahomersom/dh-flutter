@@ -123,7 +123,7 @@ class _SignUpByPhoneScreenState extends State<SignUpByPhoneScreen> {
                     : null, // Disable button if invalid
                 text: 'Sign Up',
                 isActionButton: true,
-                showBottomText: true,
+                bottomButtonText: 'Log in',
               ),
             ],
           ),

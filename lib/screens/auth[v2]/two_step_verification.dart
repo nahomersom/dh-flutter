@@ -5,12 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:geolocator/geolocator.dart';
 
-class NewPasswordScreen extends StatefulWidget {
+class TwoStepVerificationScreen extends StatefulWidget {
   @override
-  _NewPasswordScreenState createState() => _NewPasswordScreenState();
+  _TwoStepVerificationScreenState createState() =>
+      _TwoStepVerificationScreenState();
 }
 
-class _NewPasswordScreenState extends State<NewPasswordScreen> {
+class _TwoStepVerificationScreenState extends State<TwoStepVerificationScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _newPasswordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
@@ -26,7 +27,7 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Set New Password',
+                '2 Step Verfication',
                 style: AppConstants.largeTitleTextStyle
                     .copyWith(fontWeight: FontWeight.w700),
               ),
@@ -34,10 +35,16 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> {
               Form(
                 key: _formKey,
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SharedTextFormField(
                       controller: _newPasswordController,
-                      label: 'New Password',
+                      label: '2-step verfication password',
+                      labelTextStyle: const TextStyle(
+                        fontWeight: FontWeight.w500,
+                        fontSize: 16,
+                        color: AppConstants.lightTextColor,
+                      ),
                       hintText: 'Enter new password',
                       isPassword: true, // Enable password visibility toggle
                       validator: (value) {
@@ -50,29 +57,19 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> {
                         return null;
                       },
                     ),
-                    SizedBox(height: 15.h),
-                    SharedTextFormField(
-                      controller: _confirmPasswordController,
-                      label: 'Confirm Password',
-                      hintText: 'Re-enter your password',
-                      isPassword: true, // Enable password visibility toggle
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Confirm Password is required';
-                        }
-                        if (value != _newPasswordController.text) {
-                          return 'Passwords do not match';
-                        }
-                        return null;
-                      },
-                    ),
+                    SizedBox(height: 8.h),
+                    Text(
+                      'Forgot Password?',
+                      style: AppConstants.bodySmallTextStyle.copyWith(
+                          color: AppConstants.primaryAlternativeColor),
+                    )
                   ],
                 ),
               ),
               const Spacer(),
               const ActionButton(
                 onPressed: null,
-                text: 'Reset Password',
+                text: 'Login',
                 isActionButton: true,
               ),
             ],

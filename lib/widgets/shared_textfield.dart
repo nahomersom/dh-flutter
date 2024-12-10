@@ -8,13 +8,14 @@ class SharedTextFormField extends StatefulWidget {
   final String hintText;
   final String? Function(String?)? validator;
   final bool isPassword; // To handle password visibility toggle
-
+  final TextStyle? labelTextStyle;
   const SharedTextFormField({
     Key? key,
     required this.controller,
     required this.label,
     this.hintText = '',
     this.validator,
+    this.labelTextStyle,
     this.isPassword = false, // Default: not a password field
   }) : super(key: key);
 
@@ -32,10 +33,11 @@ class _SharedTextFormFieldState extends State<SharedTextFormField> {
       children: [
         Text(
           widget.label,
-          style: AppConstants.bodyTextStyle.copyWith(
-            fontWeight: FontWeight.w500,
-            color: AppConstants.lightTextColor,
-          ),
+          style: widget.labelTextStyle ??
+              AppConstants.bodyTextStyle.copyWith(
+                fontWeight: FontWeight.w500,
+                color: AppConstants.lightTextColor,
+              ),
         ),
         SizedBox(height: 10.h),
         TextFormField(
@@ -49,6 +51,7 @@ class _SharedTextFormFieldState extends State<SharedTextFormField> {
               vertical: 10,
               horizontal: 12,
             ),
+            labelStyle: widget.labelTextStyle,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12.0),
               borderSide: const BorderSide(
