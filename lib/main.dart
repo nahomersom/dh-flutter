@@ -11,6 +11,7 @@ import 'package:dh/bloc/task_bloc/task_bloc.dart';
 import 'package:dh/firebase_options.dart';
 import 'package:dh/repository/chat_repositor.dart';
 import 'package:dh/repository/repositories.dart';
+import 'package:dh/routes/app_router.dart';
 import 'package:dh/screens/auth%5Bv2%5D/forgot_password_phone_field.dart';
 import 'package:dh/screens/auth%5Bv2%5D/new_password.dart';
 import 'package:dh/screens/auth%5Bv2%5D/otp_screen.dart';
@@ -19,7 +20,7 @@ import 'package:dh/screens/auth%5Bv2%5D/profile_setup_screen.dart';
 import 'package:dh/screens/auth%5Bv2%5D/signup.dart';
 import 'package:dh/screens/auth%5Bv2%5D/two_step_verification.dart';
 import 'package:dh/screens/auth%5Bv2%5D/forgot_password.dart';
-import 'package:dh/screens/on_boarding/on_boarding_screen.dart';
+import 'package:dh/screens/splash/introduction_screen.dart';
 import 'package:dh/utils/config.dart';
 import 'package:dh/utils/helper.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -196,7 +197,7 @@ class MyApp extends StatelessWidget {
             minTextAdapt: true,
             splitScreenMode: true,
             builder: (_, child) {
-              return MaterialApp(
+              return MaterialApp.router(
                 title: 'DH',
                 debugShowCheckedModeBanner: false,
                 theme: ThemeData(
@@ -217,7 +218,7 @@ class MyApp extends StatelessWidget {
                   colorScheme:
                       ColorScheme.fromSeed(seedColor: Colors.deepPurple),
                 ),
-                home: ForgetPasswordPhoneFieldScreen(),
+                routerConfig: MyAppRouter.instance.appRouter,
               );
             }));
   }

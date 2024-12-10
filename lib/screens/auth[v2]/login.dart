@@ -3,6 +3,7 @@ import 'package:dh/widgets/action_button.dart';
 import 'package:dh/widgets/language_selector.dart';
 import 'package:dh/widgets/phone_number_field.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 
@@ -82,10 +83,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               ActionButton(
                 onPressed: isPhoneNumberValid
-                    ? () {
-                        // Handle valid phone number submission
-                        print('Phone: $_countryCode $_phoneNumber');
-                      }
+                    ? () => context.go('/auth/2-step-verification')
                     : null, // Disable button if invalid
                 text: 'Login',
                 isActionButton: true,

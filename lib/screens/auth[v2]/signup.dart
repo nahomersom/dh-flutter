@@ -2,6 +2,7 @@ import 'package:dh/constants/app_constants.dart';
 import 'package:dh/widgets/action_button.dart';
 import 'package:dh/widgets/language_selector.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 
@@ -118,7 +119,10 @@ class _SignUpByPhoneScreenState extends State<SignUpByPhoneScreen> {
                 onPressed: isPhoneNumberValid
                     ? () {
                         // Handle valid phone number submission
-                        print('Phone: $_countryCode $_phoneNumber');
+                        context.go(
+                          '/auth/otp',
+                          extra: true,
+                        );
                       }
                     : null, // Disable button if invalid
                 text: 'Sign Up',

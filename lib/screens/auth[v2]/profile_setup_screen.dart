@@ -1,9 +1,11 @@
 import 'package:dh/constants/app_constants.dart';
+import 'package:dh/routes/app_router.dart';
 import 'package:dh/widgets/action_button.dart';
 import 'package:dh/widgets/shared_textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:go_router/go_router.dart';
 
 class ProfileSetupScreen extends StatefulWidget {
   @override
@@ -123,7 +125,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                 onPressed: _isFormValid
                     ? () {
                         // Navigate when form is valid
-                        Navigator.pushNamed(context, '/nextScreen');
+                        context.go('/auth/profile-image');
                       }
                     : null, // Disable the button when the form is invalid
                 text: 'Continue',

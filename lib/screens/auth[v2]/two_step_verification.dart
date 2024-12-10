@@ -4,6 +4,7 @@ import 'package:dh/widgets/shared_textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:go_router/go_router.dart';
 
 class TwoStepVerificationScreen extends StatefulWidget {
   @override
@@ -58,10 +59,13 @@ class _TwoStepVerificationScreenState extends State<TwoStepVerificationScreen> {
                       },
                     ),
                     SizedBox(height: 8.h),
-                    Text(
-                      'Forgot Password?',
-                      style: AppConstants.bodySmallTextStyle.copyWith(
-                          color: AppConstants.primaryAlternativeColor),
+                    GestureDetector(
+                      onTap: () => context.go('/auth/forgot-password'),
+                      child: Text(
+                        'Forgot Password?',
+                        style: AppConstants.bodySmallTextStyle.copyWith(
+                            color: AppConstants.primaryAlternativeColor),
+                      ),
                     )
                   ],
                 ),

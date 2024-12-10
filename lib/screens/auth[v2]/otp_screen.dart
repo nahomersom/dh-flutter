@@ -2,9 +2,13 @@ import 'package:dh/constants/app_constants.dart';
 import 'package:dh/widgets/action_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 
 class OTPVerificationScreen extends StatefulWidget {
-  OTPVerificationScreen({Key? key}) : super(key: key);
+  final bool isFromSignUp;
+
+  const OTPVerificationScreen({Key? key, required this.isFromSignUp})
+      : super(key: key);
 
   @override
   State<OTPVerificationScreen> createState() => _OTPVerificationScreenState();
@@ -59,11 +63,15 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
               const Spacer(),
               ActionButton(
                 onPressed: () {
+                  widget.isFromSignUp
+                      ? context.go('/auth/setup-profile')
+                      : context.go('/auth/new-password');
+
                   // Ensure the OTPInputField state is not null
                   final otpFieldState = _otpKey.currentState;
                   if (otpFieldState != null && otpFieldState.isOTPValid()) {
                     String otp = otpFieldState.getEnteredOTP();
-                    print("OTP is valid: $otp");
+
                     // Proceed with OTP
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(

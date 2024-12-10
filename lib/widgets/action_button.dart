@@ -1,5 +1,7 @@
 import 'package:dh/constants/app_constants.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class ActionButton extends StatelessWidget {
   final VoidCallback? onPressed;
@@ -84,6 +86,12 @@ class ActionButton extends StatelessWidget {
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
                     ),
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = () {
+                        bottomButtonText == 'Sign up'
+                            ? context.go('/auth/sign-up')
+                            : context.go('/auth/sign-in');
+                      },
                   ),
                 ],
               ),

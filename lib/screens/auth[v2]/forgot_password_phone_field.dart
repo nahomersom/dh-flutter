@@ -1,8 +1,10 @@
+import 'package:dh/routes/app_router.dart';
 import 'package:dh/widgets/action_button.dart';
 import 'package:dh/widgets/phone_number_field.dart';
 import 'package:flutter/material.dart';
 import 'package:dh/constants/app_constants.dart';
 import 'package:dh/widgets/cutom_text.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 
 class ForgetPasswordPhoneFieldScreen extends StatefulWidget {
@@ -40,12 +42,9 @@ class _ForgetPasswordPhoneFieldScreenState
                     style: AppConstants.largeTitleTextStyle,
                   ),
                   const SizedBox(height: 30),
-                  const CustomText(
-                    title:
-                        "Please insert your phone number. You will receive a verification code sent to your phone number.",
-                    textColor: AppConstants.grey800,
-                    fontSize: AppConstants.large,
-                    fontWeight: FontWeight.w400,
+                  Text(
+                    "Please insert your phone number. You will receive a verification code sent to your phone number.",
+                    style: AppConstants.bodySmallTextStyle,
                   ),
                   const SizedBox(height: 30),
                   Column(
@@ -90,6 +89,8 @@ class _ForgetPasswordPhoneFieldScreenState
                   children: [
                     ActionButton(
                       onPressed: () {
+                        context.go('/auth/otp');
+
                         // Handle continue action
                         print('Continue button pressed');
                       },
@@ -100,7 +101,7 @@ class _ForgetPasswordPhoneFieldScreenState
                     ActionButton(
                       onPressed: () {
                         // Handle cancel action
-                        print('Cancel button pressed');
+                        context.go('/auth/sign-in');
                       },
                       text: 'Cancel',
                       isActionButton: false,

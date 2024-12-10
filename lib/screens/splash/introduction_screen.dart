@@ -1,17 +1,19 @@
 import 'package:dh/constants/app_constants.dart';
+import 'package:dh/routes/app_router.dart';
 import 'package:dh/widgets/action_button.dart';
 import 'package:dh/widgets/language_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 
-class OnBoardingScreen extends StatefulWidget {
-  const OnBoardingScreen({Key? key}) : super(key: key);
+class IntroductionScreen extends StatefulWidget {
+  const IntroductionScreen({Key? key}) : super(key: key);
 
   @override
-  State<OnBoardingScreen> createState() => _OnBoardingScreenState();
+  State<IntroductionScreen> createState() => _IntroductionScreenState();
 }
 
-class _OnBoardingScreenState extends State<OnBoardingScreen> {
+class _IntroductionScreenState extends State<IntroductionScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,8 +24,8 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               // Language Selector
-              Padding(
-                  padding: const EdgeInsets.only(top: 20.0),
+              const Padding(
+                  padding: EdgeInsets.only(top: 20.0),
                   child: LanguageSelector()),
               const SizedBox(height: 40),
               Text.rich(
@@ -82,7 +84,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
               SizedBox(
                   width: double.infinity,
                   child: ActionButton(
-                    onPressed: () => {},
+                    onPressed: () => context.go('/auth/sign-in'),
                     text: 'Continue',
                     isActionButton: true,
                   )),

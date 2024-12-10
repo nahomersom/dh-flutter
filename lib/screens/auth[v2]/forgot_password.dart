@@ -1,8 +1,10 @@
+import 'package:dh/routes/app_router.dart';
 import 'package:dh/widgets/action_button.dart';
 import 'package:flutter/material.dart';
 import 'package:dh/constants/app_constants.dart';
 import 'package:dh/widgets/cutom_text.dart';
 import 'package:dh/screens/auth/widgets/shared_selectable_card.dart';
+import 'package:go_router/go_router.dart';
 
 class ForgetPasswordScreen extends StatefulWidget {
   const ForgetPasswordScreen({super.key});
@@ -83,8 +85,8 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                   children: [
                     ActionButton(
                       onPressed: () {
+                        context.go('/auth/forgot-password-phone');
                         // Handle continue action
-                        print('Continue button pressed');
                       },
                       text: 'Continue',
                       isActionButton: true,
@@ -94,6 +96,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                       onPressed: () {
                         // Handle cancel action
                         print('Cancel button pressed');
+                        context.go('/');
                       },
                       text: 'Cancel',
                       isActionButton: false,
