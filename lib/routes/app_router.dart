@@ -7,6 +7,8 @@ import 'package:dh/screens/auth%5Bv2%5D/profile_picture.dart';
 import 'package:dh/screens/auth%5Bv2%5D/profile_setup_screen.dart';
 import 'package:dh/screens/auth%5Bv2%5D/signup.dart';
 import 'package:dh/screens/auth%5Bv2%5D/two_step_verification.dart';
+import 'package:dh/screens/messages/group_chat_screen.dart';
+import 'package:dh/screens/messages/messages_screen.dart';
 import 'package:dh/screens/screens.dart';
 import 'package:dh/screens/splash/introduction_screen.dart';
 import 'package:go_router/go_router.dart';
@@ -22,7 +24,8 @@ class MyAppRouter {
     routes: [
       GoRoute(
         path: '/',
-        builder: (context, state) => InitalScreen(),
+        // builder: (context, state) => InitalScreen(),
+        builder: (context, state) => MessagesScreen(),
       ),
       GoRoute(
         path: '/introduction',
@@ -71,6 +74,15 @@ class MyAppRouter {
             GoRoute(
               path: 'profile-image',
               builder: (context, state) => ProfilePictureScreen(),
+            ),
+          ]),
+      GoRoute(
+          path: '/mesages',
+          builder: (context, state) => MessagesScreen(),
+          routes: [
+            GoRoute(
+              path: 'group-chat',
+              builder: (context, state) => GroupChatScreen(),
             ),
           ]),
     ],

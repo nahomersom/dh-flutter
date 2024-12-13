@@ -67,6 +67,7 @@ dependencies:
   photo_manager: ^3.2.3
   popup_menu: ^2.0.0
   pretty_qr_code: ^3.3.0
+  record: ^4.4.4
   shared_preferences: ^2.2.3
   shimmer: ^3.0.0
   socket_io_client: ^3.0.0
