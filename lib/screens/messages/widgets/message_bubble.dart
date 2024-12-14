@@ -75,13 +75,19 @@ class MessageBubble extends StatelessWidget {
                             margin: EdgeInsets.only(bottom: 4.h),
                             padding: EdgeInsets.all(6.w),
                             decoration: BoxDecoration(
-                                color: AppConstants.primaryAlternativeColor
-                                    .withOpacity(0.5)
-                                    .withOpacity(0.1),
+                                color: message.isOutgoing
+                                    ? AppConstants.primaryAlternativeColor
+                                        .withOpacity(0.8)
+                                    : AppConstants.primaryAlternativeColor
+                                        .withOpacity(0.5)
+                                        .withOpacity(0.1),
                                 borderRadius: BorderRadius.circular(6.r),
                                 border: Border(
                                     left: BorderSide(
-                                        color: AppTheme.primary, width: 4))),
+                                        color: message.isOutgoing
+                                            ? AppConstants.grey100
+                                            : AppConstants.primaryColor,
+                                        width: 4))),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -89,7 +95,9 @@ class MessageBubble extends StatelessWidget {
                                   message.replyTo!.sender ?? 'You',
                                   style:
                                       AppConstants.bodySmallTextStyle.copyWith(
-                                    color: AppConstants.black,
+                                    color: message.isOutgoing
+                                        ? AppConstants.grey100
+                                        : AppConstants.black,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -97,7 +105,9 @@ class MessageBubble extends StatelessWidget {
                                   message.replyTo!.message,
                                   style:
                                       AppConstants.bodySmallTextStyle.copyWith(
-                                    color: AppConstants.grey600,
+                                    color: message.isOutgoing
+                                        ? AppConstants.white
+                                        : AppConstants.grey600,
                                   ),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
