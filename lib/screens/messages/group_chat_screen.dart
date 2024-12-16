@@ -4,6 +4,7 @@ import 'package:dh_flutter_v2/constants/app_constants.dart';
 import 'package:dh_flutter_v2/constants/app_theme.dart';
 import 'package:dh_flutter_v2/screens/messages/widgets/message_bubble.dart';
 import 'package:dh_flutter_v2/screens/messages/widgets/pinned_missages.dart';
+import 'package:dh_flutter_v2/screens/messages/widgets/popup_option.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:path_provider/path_provider.dart';
@@ -17,7 +18,8 @@ class ChatMessage {
   final bool isAnnouncement;
   final String? avatar;
   final ChatMessage? replyTo;
-  final String? audioPath; // Optional field for audio messages
+  final String? audioPath;
+  final Map<String, List<String>> reactions; // New field for reactions
 
   ChatMessage({
     this.sender,
@@ -28,7 +30,84 @@ class ChatMessage {
     this.avatar,
     this.replyTo,
     this.audioPath,
-  });
+    Map<String, List<String>>? reactions,
+  }) : reactions = reactions ?? {};
+
+  // Helper method to add a reaction
+  void addReaction(String emoji, String userId) {
+    if (!reactions.containsKey(emoji)) {
+      reactions[emoji] = [];
+    }
+    if (!reactions[emoji]!.contains(userId)) {
+      reactions[emoji]!.add(userId);
+    }
+  }
+
+  // Helper method to remove a reaction
+  void removeReaction(String emoji, String userId) {
+    if (reactions.containsKey(emoji)) {
+      reactions[emoji]!.remove(userId);
+      if (reactions[emoji]!.isEmpty) {
+        reactions.remove(emoji);
+      }
+    }
+  }
+}
+
+// Now let's create a ReactionBubble widget to display reactions
+
+class ReactionBubble extends StatelessWidget {
+  final String emoji;
+  final int count;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const ReactionBubble({
+    Key? key,
+    required this.emoji,
+    required this.count,
+    this.isSelected = false,
+    required this.onTap,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 4.h),
+        margin: EdgeInsets.only(right: 4.w),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? AppConstants.primaryColor.withOpacity(0.1)
+              : Colors.white,
+          borderRadius: BorderRadius.circular(12.r),
+          border: Border.all(
+            color:
+                isSelected ? AppConstants.primaryColor : AppConstants.grey300,
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(emoji, style: TextStyle(fontSize: 14.sp)),
+            if (count > 1) ...[
+              SizedBox(width: 4.w),
+              Text(
+                count.toString(),
+                style: TextStyle(
+                  fontSize: 12.sp,
+                  color: isSelected
+                      ? AppConstants.primaryColor
+                      : AppConstants.grey600,
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 class GroupChatScreen extends StatefulWidget {
@@ -189,13 +268,27 @@ class _GroupChatScreenState extends State<GroupChatScreen>
     _focusNode.requestFocus();
   }
 
+  void _handleReaction(ChatMessage message, String emoji) {
+    setState(() {
+      final currentUserId = 'current_user_id'; // Replace with actual user ID
+      if (message.reactions.containsKey(emoji) &&
+          message.reactions[emoji]!.contains(currentUserId)) {
+        message.removeReaction(emoji, currentUserId);
+      } else {
+        message.addReaction(emoji, currentUserId);
+      }
+    });
+  }
+
   void _showMessageOptions(
       BuildContext context, ChatMessage message, Offset globalPosition) {
+    final double popupWidth = MediaQuery.of(context).size.width * 0.5;
     showDialog(
       context: context,
-      builder: (context) => SimpleDialog(
-        children: [
-          _buildOptionTile(
+      builder: (context) => PopupOption(
+        position: globalPosition,
+        popupItems: [
+          PopupItem(
             icon: Icons.reply,
             title: 'Reply',
             onTap: () {
@@ -203,7 +296,7 @@ class _GroupChatScreenState extends State<GroupChatScreen>
               _handleReply(message);
             },
           ),
-          _buildOptionTile(
+          PopupItem(
             icon: Icons.copy,
             title: 'Copy',
             onTap: () {
@@ -211,55 +304,37 @@ class _GroupChatScreenState extends State<GroupChatScreen>
               Navigator.pop(context);
             },
           ),
-          _buildOptionTile(
+          PopupItem(
             icon: Icons.forward,
             title: 'Forward',
             onTap: () {
-              // Add forward functionality
+              // Add copy functionality
               Navigator.pop(context);
             },
           ),
-          _buildOptionTile(
+          PopupItem(
             icon: Icons.push_pin,
             title: 'Pin',
             onTap: () {
-              // Add pin functionality
+              // Add copy functionality
               Navigator.pop(context);
             },
           ),
-          _buildOptionTile(
+          PopupItem(
             icon: Icons.delete,
             title: 'Delete',
+            isDestructive: true,
             onTap: () {
-              // Add delete functionality
+              // Add copy functionality
               Navigator.pop(context);
             },
-            isDestructive: true,
-          ),
+          )
         ],
+        hasEmoji: true,
+        message: message,
+        popupWidth: popupWidth,
+        handleReaction: _handleReaction,
       ),
-    );
-  }
-
-  Widget _buildOptionTile({
-    required IconData icon,
-    required String title,
-    required VoidCallback onTap,
-    bool isDestructive = false,
-  }) {
-    return ListTile(
-      leading: Icon(
-        icon,
-        color: isDestructive ? Colors.red : AppConstants.grey600,
-      ),
-      title: Text(
-        title,
-        style: TextStyle(
-          color: isDestructive ? Colors.red : AppConstants.grey800,
-          fontSize: 16.sp,
-        ),
-      ),
-      onTap: onTap,
     );
   }
 
@@ -395,7 +470,10 @@ class _GroupChatScreenState extends State<GroupChatScreen>
                       _showMessageOptions(
                           context, message, details.globalPosition);
                     },
-                    child: MessageBubble(message: message),
+                    child: MessageBubble(
+                      message: message,
+                      onReactionTap: _handleReaction,
+                    ),
                   ),
                 );
               },

@@ -13,10 +13,6 @@ class MessagesScreen extends StatefulWidget {
 class _MessagesScreenState extends State<MessagesScreen> {
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    final sizeH = size.height;
-    final sizeW = size.width;
-
     return Scaffold(
       body: Column(
         children: [

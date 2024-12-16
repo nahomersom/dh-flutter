@@ -7,10 +7,11 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class MessageBubble extends StatefulWidget {
   final ChatMessage message;
-
+  final Function(ChatMessage, String) onReactionTap;
   const MessageBubble({
     Key? key,
     required this.message,
+    required this.onReactionTap,
   }) : super(key: key);
 
   @override
@@ -22,6 +23,7 @@ class _MessageBubbleState extends State<MessageBubble> {
   bool _isPlaying = false;
   Duration _currentPosition = Duration.zero;
   Duration _totalDuration = Duration.zero;
+  final String currentUserId = 'current_user_id';
 
   @override
   void initState() {
@@ -191,6 +193,27 @@ class _MessageBubbleState extends State<MessageBubble> {
                     ),
                   ),
                 ),
+                if (widget.message.reactions.isNotEmpty)
+                  Padding(
+                    padding: EdgeInsets.only(
+                      left: widget.message.isOutgoing ? 0 : 40.w,
+                      right: widget.message.isOutgoing ? 0 : 40.w,
+                      top: 4.h,
+                    ),
+                    child: Wrap(
+                      spacing: 4.w,
+                      children: widget.message.reactions.entries.map((entry) {
+                        final hasReacted = entry.value.contains(currentUserId);
+                        return ReactionBubble(
+                          emoji: entry.key,
+                          count: entry.value.length,
+                          isSelected: hasReacted,
+                          onTap: () =>
+                              widget.onReactionTap(widget.message, entry.key),
+                        );
+                      }).toList(),
+                    ),
+                  ),
               ],
             ),
           ),
