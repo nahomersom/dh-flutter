@@ -10,8 +10,6 @@ class MessagesScreen extends StatefulWidget {
   State<MessagesScreen> createState() => _MessagesScreenState();
 }
 
-int notificationCount = 3;
-
 class _MessagesScreenState extends State<MessagesScreen> {
   @override
   Widget build(BuildContext context) {
@@ -20,64 +18,6 @@ class _MessagesScreenState extends State<MessagesScreen> {
     final sizeW = size.width;
 
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        title: Padding(
-          padding: const EdgeInsets.only(top: 8),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Stack(
-                alignment: Alignment.topRight,
-                children: [
-                  IconButton(
-                    icon: const Icon(
-                      Icons.notifications_outlined,
-                      color: AppConstants.grey700,
-                      size: AppConstants.xxxxLarge,
-                    ),
-                    onPressed: () {},
-                  ),
-                  if (notificationCount > 0)
-                    Container(
-                      margin: const EdgeInsets.only(top: 4, right: 8),
-                      padding: const EdgeInsets.all(6),
-                      decoration: const BoxDecoration(
-                        color: AppTheme.error,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Text(
-                        "$notificationCount",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 10,
-                        ),
-                      ),
-                    )
-                ],
-              ),
-              const Text(
-                'DH',
-                style: TextStyle(
-                  color: AppTheme.baseBlack,
-                  fontSize: AppConstants.xxxxLarge,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              CircleAvatar(
-                backgroundColor: AppConstants.grey300,
-                // radius: 50,
-                child: IconButton(
-                  icon:
-                      const Icon(Icons.more_horiz, color: AppConstants.grey700),
-                  onPressed: () {},
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
       body: Column(
         children: [
           Padding(
@@ -103,7 +43,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
           ),
           Expanded(
             child: ListView(
-              children: [
+              children: const [
                 ChatListItem(
                   avatar: CircleAvatar(
                     backgroundColor: AppConstants.primaryAlternativeColor,
@@ -247,7 +187,7 @@ class ChatListItem extends StatelessWidget {
                 ),
                 child: Text(
                   "$notificationCount",
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 10,
                   ),
@@ -257,7 +197,7 @@ class ChatListItem extends StatelessWidget {
         ),
         onTap: () {
           print("vvvvvvvvvvvv");
-          context.go("/mesages/group-chat");
+          context.go("/workspace/messages/group-chat");
         });
   }
 }
