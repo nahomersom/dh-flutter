@@ -1,10 +1,11 @@
-import 'package:dh_flutter_v2/constants/app_constants.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:dh_flutter_v2/constants/app_theme.dart';
 import 'package:dh_flutter_v2/screens/messages/group_chat_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:dh_flutter_v2/constants/app_constants.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class MessageBubble extends StatelessWidget {
+class MessageBubble extends StatefulWidget {
   final ChatMessage message;
 
   const MessageBubble({
@@ -13,26 +14,85 @@ class MessageBubble extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  State<MessageBubble> createState() => _MessageBubbleState();
+}
+
+class _MessageBubbleState extends State<MessageBubble> {
+  final AudioPlayer _audioPlayer = AudioPlayer();
+  bool _isPlaying = false;
+  Duration _currentPosition = Duration.zero;
+  Duration _totalDuration = Duration.zero;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Listen to the total duration of the audio file
+    _audioPlayer.onDurationChanged.listen((duration) {
+      setState(() {
+        _totalDuration = duration;
+      });
+    });
+
+    // Listen to current playback position
+    _audioPlayer.onPositionChanged.listen((position) {
+      setState(() {
+        _currentPosition = position;
+      });
+    });
+
+    // Listen for completion to reset the UI
+    _audioPlayer.onPlayerComplete.listen((event) {
+      setState(() {
+        _isPlaying = false;
+        _currentPosition = Duration.zero; // Reset playback time
+      });
+    });
+  }
+
+  Future<void> _playAudio(String audioPath) async {
+    if (_isPlaying) {
+      await _audioPlayer.stop();
+      setState(() {
+        _isPlaying = false;
+        _currentPosition = Duration.zero;
+      });
+    } else {
+      await _audioPlayer.play(DeviceFileSource(audioPath));
+      setState(() {
+        _isPlaying = true;
+      });
+    }
+  }
+
+  String _formatDuration(Duration duration) {
+    String twoDigits(int n) => n.toString().padLeft(2, "0");
+    final minutes = twoDigits(duration.inMinutes.remainder(60));
+    final seconds = twoDigits(duration.inSeconds.remainder(60));
+    return "$minutes:$seconds";
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
       margin: EdgeInsets.only(bottom: 16.h),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          if (!message.isOutgoing && message.avatar != null)
+          if (!widget.message.isOutgoing && widget.message.avatar != null)
             CircleAvatar(
               backgroundColor:
-                  message.isAnnouncement ? Colors.red : Colors.blue,
+                  widget.message.isAnnouncement ? Colors.red : Colors.blue,
               radius: 20.r,
               child: Text(
-                message.avatar!,
+                widget.message.avatar!,
                 style: TextStyle(color: AppConstants.white),
               ),
             ),
           SizedBox(width: 8.w),
           Expanded(
             child: Column(
-              crossAxisAlignment: message.isOutgoing
+              crossAxisAlignment: widget.message.isOutgoing
                   ? CrossAxisAlignment.end
                   : CrossAxisAlignment.start,
               children: [
@@ -40,97 +100,87 @@ class MessageBubble extends StatelessWidget {
                   child: Container(
                     padding: EdgeInsets.all(12.w),
                     decoration: BoxDecoration(
-                      color: message.isOutgoing
+                      color: widget.message.isOutgoing
                           ? AppConstants.primaryAlternativeColor
                               .withOpacity(0.85)
-                          : message.isAnnouncement
+                          : widget.message.isAnnouncement
                               ? AppTheme.warning.shade50
                               : AppTheme.primary.shade50,
                       borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(16.r),
                         topRight: Radius.circular(16.r),
-                        bottomLeft:
-                            Radius.circular(message.isOutgoing ? 16.r : 0),
-                        bottomRight:
-                            Radius.circular(message.isOutgoing ? 0 : 16.r),
+                        bottomLeft: Radius.circular(
+                            widget.message.isOutgoing ? 16.r : 0),
+                        bottomRight: Radius.circular(
+                            widget.message.isOutgoing ? 0 : 16.r),
                       ),
-                      border: message.isAnnouncement
+                      border: widget.message.isAnnouncement
                           ? Border.all(color: AppTheme.warning.shade600)
                           : null,
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        if (message.sender != null)
-                          Padding(
-                            padding: EdgeInsets.only(bottom: 4.h),
-                            child: Text(
-                              message.sender!,
-                              style: AppConstants.bodySmallTextStyle
-                                  .copyWith(fontWeight: FontWeight.bold),
+                        if (widget.message.audioPath != null)
+                          Row(
+                            children: [
+                              IconButton(
+                                onPressed: () =>
+                                    _playAudio(widget.message.audioPath!),
+                                icon: Icon(
+                                  _isPlaying ? Icons.stop : Icons.play_arrow,
+                                  color: widget.message.isOutgoing
+                                      ? AppConstants.white
+                                      : AppConstants.primaryColor,
+                                ),
+                              ),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "Audio Message",
+                                      style:
+                                          AppConstants.bodyTextStyle.copyWith(
+                                        color: widget.message.isOutgoing
+                                            ? AppConstants.white
+                                            : AppConstants.black,
+                                      ),
+                                    ),
+                                    SizedBox(height: 4.h),
+                                    Text(
+                                      "${_formatDuration(_currentPosition)} / ${_formatDuration(_totalDuration)}",
+                                      style: AppConstants.bodySmallTextStyle
+                                          .copyWith(
+                                        color: widget.message.isOutgoing
+                                            ? AppConstants.white
+                                                .withOpacity(0.7)
+                                            : AppConstants.grey600,
+                                        fontSize: 12.sp,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          )
+                        else
+                          Text(
+                            widget.message.message ?? '',
+                            style: AppConstants.bodyTextStyle.copyWith(
+                              color: widget.message.isOutgoing
+                                  ? AppConstants.white
+                                  : AppConstants.black,
                             ),
                           ),
-                        if (message.replyTo != null)
-                          Container(
-                            margin: EdgeInsets.only(bottom: 4.h),
-                            padding: EdgeInsets.all(6.w),
-                            decoration: BoxDecoration(
-                                color: message.isOutgoing
-                                    ? AppConstants.primaryAlternativeColor
-                                        .withOpacity(0.8)
-                                    : AppConstants.primaryAlternativeColor
-                                        .withOpacity(0.5)
-                                        .withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(6.r),
-                                border: Border(
-                                    left: BorderSide(
-                                        color: message.isOutgoing
-                                            ? AppConstants.grey100
-                                            : AppConstants.primaryColor,
-                                        width: 4))),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  message.replyTo!.sender ?? 'You',
-                                  style:
-                                      AppConstants.bodySmallTextStyle.copyWith(
-                                    color: message.isOutgoing
-                                        ? AppConstants.grey100
-                                        : AppConstants.black,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                Text(
-                                  message.replyTo!.message,
-                                  style:
-                                      AppConstants.bodySmallTextStyle.copyWith(
-                                    color: message.isOutgoing
-                                        ? AppConstants.white
-                                        : AppConstants.grey600,
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ],
-                            ),
-                          ),
-                        Text(
-                          message.message,
-                          style: AppConstants.bodyTextStyle.copyWith(
-                            color: message.isOutgoing
-                                ? AppConstants.white
-                                : AppConstants.black,
-                          ),
-                        ),
                         SizedBox(height: 4.h),
                         Align(
                           alignment: Alignment.bottomRight,
                           child: Text(
-                            message.time,
+                            widget.message.time,
                             textAlign: TextAlign.right,
                             style: AppConstants.bodySmallTextStyle.copyWith(
-                              color: message.isOutgoing
+                              color: widget.message.isOutgoing
                                   ? AppConstants.white.withOpacity(0.7)
                                   : AppConstants.grey500,
                               fontSize: AppConstants.small.sp,
@@ -148,5 +198,11 @@ class MessageBubble extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _audioPlayer.dispose();
+    super.dispose();
   }
 }

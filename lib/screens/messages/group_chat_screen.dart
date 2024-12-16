@@ -13,21 +13,23 @@ import 'package:intl/intl.dart';
 
 class ChatMessage {
   final String? sender;
-  final String message;
+  final String? message;
   final String time;
   final bool isOutgoing;
   final bool isAnnouncement;
   final String? avatar;
   final ChatMessage? replyTo;
+  final String? audioPath; // Optional field for audio messages
 
   ChatMessage({
     this.sender,
-    required this.message,
+    this.message,
     required this.time,
     this.isOutgoing = false,
     this.isAnnouncement = false,
     this.avatar,
     this.replyTo,
+    this.audioPath,
   });
 }
 
@@ -143,7 +145,7 @@ class _GroupChatScreenState extends State<GroupChatScreen>
   }
 
   void _addMessageToChat(String audioPath) {
-    _addMessage("audio sample");
+    _addMessage(message: audioPath, isAudio: true);
   }
 
   String _formatDuration(int duration) {
@@ -152,14 +154,14 @@ class _GroupChatScreenState extends State<GroupChatScreen>
     return '$minutes:$seconds';
   }
 
-  void _addMessage(String message) {
+  void _addMessage({String? message, isAudio = false}) {
     setState(() {
       _messages.add(ChatMessage(
-        message: message,
-        time: _getCurrentTime(),
-        isOutgoing: true,
-        replyTo: _replyingTo,
-      ));
+          message: isAudio ? '' : message,
+          time: _getCurrentTime(),
+          isOutgoing: true,
+          replyTo: _replyingTo,
+          audioPath: isAudio ? message : null));
       _replyingTo = null;
     });
     _scrollToBottom();
@@ -308,7 +310,7 @@ class _GroupChatScreenState extends State<GroupChatScreen>
                   ),
                 ),
                 Text(
-                  _replyingTo!.message,
+                  _replyingTo!.message ?? '',
                   style: AppConstants.bodySmallTextStyle.copyWith(
                     color: AppConstants.grey600,
                   ),
@@ -431,7 +433,7 @@ class _GroupChatScreenState extends State<GroupChatScreen>
                       },
                       onSubmitted: (value) {
                         if (value.isNotEmpty) {
-                          _addMessage(value);
+                          _addMessage(message: value);
                           _textController.clear();
                           setState(() {
                             _hasText = false;
@@ -515,7 +517,7 @@ class _GroupChatScreenState extends State<GroupChatScreen>
                   },
                   onTap: () {
                     if (!_isRecording && _textController.text.isNotEmpty) {
-                      _addMessage(_textController.text);
+                      _addMessage(message: _textController.text);
                       _textController.clear();
                       setState(() {
                         _hasText = false;
