@@ -3,13 +3,11 @@ import 'dart:async';
 import 'package:dh_flutter_v2/constants/app_constants.dart';
 import 'package:dh_flutter_v2/constants/app_theme.dart';
 import 'package:dh_flutter_v2/screens/messages/widgets/message_bubble.dart';
-import 'package:dh_flutter_v2/screens/messages/widgets/message_input.dart';
 import 'package:dh_flutter_v2/screens/messages/widgets/pinned_missages.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
-import 'package:intl/intl.dart';
 
 class ChatMessage {
   final String? sender;
@@ -385,12 +383,20 @@ class _GroupChatScreenState extends State<GroupChatScreen>
                   );
                 }
                 final message = _messages[index - 1];
-                return GestureDetector(
-                  onLongPressStart: (LongPressStartDetails details) {
-                    _showMessageOptions(
-                        context, message, details.globalPosition);
+                return Dismissible(
+                  key: Key(message.time),
+                  direction: DismissDirection.startToEnd,
+                  confirmDismiss: (direction) async {
+                    _handleReply(message);
+                    return false;
                   },
-                  child: MessageBubble(message: message),
+                  child: GestureDetector(
+                    onLongPressStart: (LongPressStartDetails details) {
+                      _showMessageOptions(
+                          context, message, details.globalPosition);
+                    },
+                    child: MessageBubble(message: message),
+                  ),
                 );
               },
             ),
