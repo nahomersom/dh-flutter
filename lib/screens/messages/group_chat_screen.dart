@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:dh_flutter_v2/constants/app_constants.dart';
 import 'package:dh_flutter_v2/constants/app_theme.dart';
 import 'package:dh_flutter_v2/screens/messages/widgets/message_bubble.dart';
+import 'package:dh_flutter_v2/screens/messages/widgets/message_input.dart';
+import 'package:dh_flutter_v2/screens/messages/widgets/pinned_missages.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:path_provider/path_provider.dart';
@@ -56,7 +58,6 @@ class _GroupChatScreenState extends State<GroupChatScreen>
   bool _isCancelled = false;
   late AnimationController _animationController;
   late Animation<double> _animation;
-  bool _showPinnedMessage = true;
 
   @override
   void initState() {
@@ -75,7 +76,6 @@ class _GroupChatScreenState extends State<GroupChatScreen>
             'Hey @lemmasolomon, hope all is well. I just sent request to the questionnaire you sent, let me in when you can.',
         time: '3:02 PM',
         isOutgoing: true,
-        // sender: 'John Alexander',
       ),
       ChatMessage(
         sender: 'Lemma Solomon',
@@ -101,7 +101,6 @@ class _GroupChatScreenState extends State<GroupChatScreen>
   Future<void> _initializeRecorder() async {
     final hasPermission = await _audioRecorder.hasPermission();
     if (!hasPermission) {
-      // Handle permission not granted
       print('Microphone permission not granted');
     }
   }
@@ -190,10 +189,87 @@ class _GroupChatScreenState extends State<GroupChatScreen>
     _focusNode.requestFocus();
   }
 
+  void _showMessageOptions(
+      BuildContext context, ChatMessage message, Offset globalPosition) {
+    showDialog(
+      context: context,
+      builder: (context) => SimpleDialog(
+        children: [
+          _buildOptionTile(
+            icon: Icons.reply,
+            title: 'Reply',
+            onTap: () {
+              Navigator.pop(context);
+              _handleReply(message);
+            },
+          ),
+          _buildOptionTile(
+            icon: Icons.copy,
+            title: 'Copy',
+            onTap: () {
+              // Add copy functionality
+              Navigator.pop(context);
+            },
+          ),
+          _buildOptionTile(
+            icon: Icons.forward,
+            title: 'Forward',
+            onTap: () {
+              // Add forward functionality
+              Navigator.pop(context);
+            },
+          ),
+          _buildOptionTile(
+            icon: Icons.push_pin,
+            title: 'Pin',
+            onTap: () {
+              // Add pin functionality
+              Navigator.pop(context);
+            },
+          ),
+          _buildOptionTile(
+            icon: Icons.delete,
+            title: 'Delete',
+            onTap: () {
+              // Add delete functionality
+              Navigator.pop(context);
+            },
+            isDestructive: true,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildOptionTile({
+    required IconData icon,
+    required String title,
+    required VoidCallback onTap,
+    bool isDestructive = false,
+  }) {
+    return ListTile(
+      leading: Icon(
+        icon,
+        color: isDestructive ? Colors.red : AppConstants.grey600,
+      ),
+      title: Text(
+        title,
+        style: TextStyle(
+          color: isDestructive ? Colors.red : AppConstants.grey800,
+          fontSize: 16.sp,
+        ),
+      ),
+      onTap: onTap,
+    );
+  }
+
   @override
   void dispose() {
     _focusNode.dispose();
     _textController.dispose();
+    _scrollController.dispose();
+    _animationController.dispose();
+    _timer?.cancel();
     super.dispose();
   }
 
@@ -253,75 +329,6 @@ class _GroupChatScreenState extends State<GroupChatScreen>
     );
   }
 
-  Widget _buildPinnedMessage() {
-    return Container(
-      margin: EdgeInsets.all(8.w),
-      decoration: BoxDecoration(
-        color: Colors.grey[100],
-        borderRadius: BorderRadius.circular(8.r),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Padding(
-              padding: EdgeInsets.fromLTRB(16.w, 12.h, 8.w, 4.h),
-              child: Row(
-                children: [
-                  Text(
-                    'Pinned Message',
-                    style: AppConstants.bodySmallTextStyle.copyWith(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14.sp,
-                    ),
-                  ),
-                  const Spacer(),
-                  IconButton(
-                    icon: Icon(Icons.close, size: 20.sp),
-                    onPressed: () => setState(() => _showPinnedMessage = false),
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
-                  ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 4.h),
-              child: Text(
-                'Announcement:',
-                style: AppConstants.bodySmallTextStyle.copyWith(
-                  fontSize: 12.sp,
-                  color: Colors.grey,
-                ),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 12.h),
-              child: Text(
-                'Hello Team! We\'ve set the deadline day for the project at O...',
-                style: AppConstants.bodySmallTextStyle.copyWith(
-                  fontSize: 13.sp,
-                  color: Colors.black87,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -356,7 +363,7 @@ class _GroupChatScreenState extends State<GroupChatScreen>
       ),
       body: Column(
         children: [
-          if (_showPinnedMessage) _buildPinnedMessage(),
+          PinnedMessages(),
           Expanded(
             child: ListView.builder(
               controller: _scrollController,
@@ -376,12 +383,10 @@ class _GroupChatScreenState extends State<GroupChatScreen>
                   );
                 }
                 final message = _messages[index - 1];
-                return Dismissible(
-                  key: Key(message.time),
-                  direction: DismissDirection.endToStart,
-                  confirmDismiss: (direction) async {
-                    _handleReply(message);
-                    return false;
+                return GestureDetector(
+                  onLongPressStart: (LongPressStartDetails details) {
+                    _showMessageOptions(
+                        context, message, details.globalPosition);
                   },
                   child: MessageBubble(message: message),
                 );
@@ -389,189 +394,58 @@ class _GroupChatScreenState extends State<GroupChatScreen>
             ),
           ),
           _buildReplyPreview(),
-          // Container(
-          //   padding: EdgeInsets.all(8.w),
-          //   margin: EdgeInsets.symmetric(horizontal: 8),
-          //   decoration: BoxDecoration(
-          //     color: AppConstants.white,
-          //     borderRadius: BorderRadius.circular(8.h),
-          //     border: Border(
-          //       top: BorderSide(color: AppTheme.gray.shade200),
-          //     ),
-          //   ),
-          //   child: Row(
-          //     children: [
-          //       if (_isRecording) ...[
-          //         Expanded(
-          //           child: GestureDetector(
-          //             onHorizontalDragUpdate: (details) {
-          //               setState(() {
-          //                 _cancelSlidePosition += details.delta.dx;
-          //                 if (_cancelSlidePosition < -100) {
-          //                   _isCancelled = true;
-          //                   _stopRecording();
-          //                 }
-          //               });
-          //             },
-          //             child: Container(
-          //               padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          //               child: Text(
-          //                 'Slide to cancel',
-          //                 style: TextStyle(
-          //                   color: Colors.grey[600],
-          //                 ),
-          //               ),
-          //             ),
-          //           ),
-          //         ),
-          //         Text(_formatDuration(_recordingDuration)),
-          //       ] else ...[
-          //         IconButton(
-          //           icon: const Icon(Icons.add, color: AppConstants.grey500),
-          //           onPressed: () {},
-          //         ),
-          //         Expanded(
-          //           child: TextField(
-          //             controller: _textController,
-          //             focusNode: _focusNode,
-          //             decoration: InputDecoration(
-          //               hintText: 'Write a message...',
-          //               hintStyle: AppConstants.bodyTextStyle
-          //                   .copyWith(color: AppConstants.grey500),
-          //               border: InputBorder.none,
-          //             ),
-          //             onChanged: (value) {
-          //               setState(() {
-          //                 _hasText = value.isNotEmpty;
-          //               });
-          //             },
-          //             onSubmitted: (value) {
-          //               if (value.isNotEmpty) {
-          //                 _addMessage(value);
-          //                 _textController.clear();
-          //                 setState(() {
-          //                   _hasText = false;
-          //                 });
-          //               }
-          //             },
-          //           ),
-          //         ),
-          //       ],
-          //       GestureDetector(
-          //         onLongPressStart: (_) => _startRecording(),
-          //         onLongPressEnd: (_) => _stopRecording(),
-          //         onHorizontalDragUpdate: (details) {
-          //           setState(() {
-          //             _cancelSlidePosition += details.delta.dx;
-          //             if (_cancelSlidePosition < -100) {
-          //               _isCancelled = true;
-          //               _stopRecording();
-          //             }
-          //           });
-          //         },
-          //         child: ScaleTransition(
-          //           scale: _animation,
-          //           child: IconButton(
-          //             icon: Icon(
-          //                 _focusNode.hasFocus || _hasText
-          //                     ? Icons.send
-          //                     : Icons.mic,
-          //                 color: AppConstants.grey500),
-          //             onPressed: () {
-          //               if (_focusNode.hasFocus &&
-          //                   _textController.text.isNotEmpty) {
-          //                 _addMessage(_textController.text);
-          //                 _textController.clear();
-          //                 setState(() {
-          //                   _hasText = false;
-          //                 });
-          //               }
-          //             },
-          //           ),
-          //         ),
-          //       ),
-          //     ],
-          //   ),
-          // ),
-
-          Container(
-            padding: EdgeInsets.all(_isExpanded ? 12 : 8),
-            margin: EdgeInsets.symmetric(horizontal: 8),
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            padding: EdgeInsets.symmetric(horizontal: 8.w),
+            margin: EdgeInsets.all(8.w),
             decoration: BoxDecoration(
-              color: AppConstants.white,
-              borderRadius: BorderRadius.circular(8),
-              border: Border(
-                top: BorderSide(color: AppTheme.gray.shade200),
-              ),
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12.r),
+              border: !_isRecording
+                  ? Border.all(color: Colors.grey.shade300)
+                  : null,
             ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
+            child: Row(
               children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    if (_isRecording) ...[
-                      Expanded(
-                        child: GestureDetector(
-                          onHorizontalDragUpdate: (details) {
-                            setState(() {
-                              _cancelSlidePosition += details.delta.dx;
-                              if (_cancelSlidePosition < -100) {
-                                _isCancelled = true;
-                                _stopRecording();
-                              }
-                            });
-                          },
-                          child: Container(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 16.0),
-                            child: Text(
-                              'Slide to cancel',
-                              style: TextStyle(
-                                color: Colors.grey[600],
-                              ),
-                            ),
-                          ),
-                        ),
+                if (!_isRecording) ...[
+                  IconButton(
+                    icon: Icon(Icons.add, color: Colors.grey.shade600),
+                    onPressed: () {},
+                    padding: EdgeInsets.all(12.w),
+                  ),
+                  Expanded(
+                    child: TextField(
+                      controller: _textController,
+                      focusNode: _focusNode,
+                      maxLines: _isExpanded ? 9 : 1,
+                      decoration: InputDecoration(
+                        hintText: 'Write a message...',
+                        hintStyle: TextStyle(color: Colors.grey.shade600),
+                        border: InputBorder.none,
+                        contentPadding: EdgeInsets.symmetric(horizontal: 8.w),
                       ),
-                      Text(_formatDuration(_recordingDuration)),
-                    ] else ...[
-                      IconButton(
-                        icon:
-                            const Icon(Icons.add, color: AppConstants.grey500),
-                        onPressed: () {},
-                      ),
-                      Expanded(
-                        child: TextField(
-                          controller: _textController,
-                          focusNode: _focusNode,
-                          maxLines: _isExpanded ? null : 5,
-                          decoration: InputDecoration(
-                            hintText: 'Write a message...',
-                            hintStyle: AppConstants.bodyTextStyle
-                                .copyWith(color: AppConstants.grey500),
-                            border: InputBorder.none,
-                          ),
-                          onChanged: (value) {
-                            setState(() {
-                              _hasText = value.isNotEmpty;
-                            });
-                          },
-                          onSubmitted: (value) {
-                            if (value.isNotEmpty) {
-                              _addMessage(value);
-                              _textController.clear();
-                              setState(() {
-                                _hasText = false;
-                              });
-                            }
-                          },
-                        ),
-                      ),
-                    ],
+                      onChanged: (value) {
+                        setState(() {
+                          _hasText = value.isNotEmpty;
+                        });
+                      },
+                      onSubmitted: (value) {
+                        if (value.isNotEmpty) {
+                          _addMessage(value);
+                          _textController.clear();
+                          setState(() {
+                            _hasText = false;
+                          });
+                        }
+                      },
+                    ),
+                  ),
+                  if (_hasText)
                     IconButton(
                       icon: Icon(
-                        _isExpanded ? Icons.compress : Icons.expand,
+                        _isExpanded
+                            ? Icons.close_fullscreen
+                            : Icons.open_in_full,
                         color: AppConstants.grey500,
                       ),
                       onPressed: () {
@@ -580,9 +454,29 @@ class _GroupChatScreenState extends State<GroupChatScreen>
                         });
                       },
                     ),
-                    GestureDetector(
-                      onLongPressStart: (_) => _startRecording(),
-                      onLongPressEnd: (_) => _stopRecording(),
+                ] else ...[
+                  Row(
+                    children: [
+                      Container(
+                        width: 8.w,
+                        height: 8.w,
+                        decoration: BoxDecoration(
+                          color: Colors.red,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      SizedBox(width: 8.w),
+                      Text(
+                        _formatDuration(_recordingDuration),
+                        style: TextStyle(
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Expanded(
+                    child: GestureDetector(
                       onHorizontalDragUpdate: (details) {
                         setState(() {
                           _cancelSlidePosition += details.delta.dx;
@@ -592,32 +486,76 @@ class _GroupChatScreenState extends State<GroupChatScreen>
                           }
                         });
                       },
-                      child: ScaleTransition(
-                        scale: _animation,
-                        child: IconButton(
-                          icon: Icon(
-                              _focusNode.hasFocus || _hasText
-                                  ? Icons.send
-                                  : Icons.mic,
-                              color: AppConstants.grey500),
-                          onPressed: () {
-                            if (_focusNode.hasFocus &&
-                                _textController.text.isNotEmpty) {
-                              _addMessage(_textController.text);
-                              _textController.clear();
-                              setState(() {
-                                _hasText = false;
-                              });
-                            }
-                          },
-                        ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.arrow_back,
+                              size: 20.sp, color: Colors.grey[600]),
+                          SizedBox(width: 8.w),
+                          Text(
+                            'Slide to cancel',
+                            style: TextStyle(
+                              fontSize: 16.sp,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ],
+                  ),
+                ],
+                GestureDetector(
+                  onLongPressStart: (_) => _startRecording(),
+                  onLongPressEnd: (_) => _stopRecording(),
+                  onLongPressMoveUpdate: (_) {
+                    setState(() {
+                      _isCancelled = true;
+                      _stopRecording();
+                    });
+                  },
+                  onTap: () {
+                    if (!_isRecording && _textController.text.isNotEmpty) {
+                      _addMessage(_textController.text);
+                      _textController.clear();
+                      setState(() {
+                        _hasText = false;
+                      });
+                    }
+                  },
+                  child: ScaleTransition(
+                    scale: _animation,
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      width: _isRecording ? 50.w : 40.w,
+                      height: _isRecording ? 50.w : 40.w,
+                      decoration: BoxDecoration(
+                        color: _isRecording
+                            ? AppTheme.primary
+                            : Colors.transparent,
+                        shape: BoxShape.circle,
+                        boxShadow: _isRecording
+                            ? [
+                                BoxShadow(
+                                    color: AppTheme.gray.shade100,
+                                    blurRadius: 12,
+                                    spreadRadius: 20,
+                                    blurStyle: BlurStyle.solid)
+                              ]
+                            : null,
+                      ),
+                      child: Icon(
+                        _hasText ? Icons.send : Icons.mic,
+                        color:
+                            _isRecording ? Colors.white : Colors.grey.shade600,
+                        size: _isRecording ? 24.sp : 20.sp,
+                      ),
+                    ),
+                  ),
                 ),
+                SizedBox(width: 8.w),
               ],
             ),
-          )
+          ),
         ],
       ),
     );
