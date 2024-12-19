@@ -1,8 +1,11 @@
 import 'package:dh_flutter_v2/constants/app_constants.dart';
+import 'package:dh_flutter_v2/constants/app_theme.dart';
 import 'package:dh_flutter_v2/screens/messages/group_chat_screen.dart';
+import 'package:dh_flutter_v2/widgets/stacked-avatar.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:intl/intl.dart';
 
 class PopupItem {
   final IconData icon;
@@ -10,12 +13,13 @@ class PopupItem {
   final bool isDestructive;
   final VoidCallback onTap;
 
-  const PopupItem(
-      {Key? key,
-      required this.icon,
-      required this.title,
-      this.isDestructive = false,
-      required this.onTap});
+  const PopupItem({
+    Key? key,
+    required this.icon,
+    required this.title,
+    this.isDestructive = false,
+    required this.onTap,
+  });
 }
 
 class PopupOption extends StatefulWidget {
@@ -47,6 +51,7 @@ class _PopupOptionState extends State<PopupOption> {
 
   final double popupItemHeight = 44.0;
   final double containerSpacing = 8.0;
+  bool _showingReactionDetails = false;
 
   @override
   void dispose() {
@@ -135,10 +140,22 @@ class _PopupOptionState extends State<PopupOption> {
     return Offset(dx, dy);
   }
 
+  void _toggleReactionDetails() {
+    setState(() {
+      _showingReactionDetails = !_showingReactionDetails;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final adjustedPosition =
         _getAdjustedPosition(context, widget.position, widget.popupWidth);
+    bool hasReaction =
+        widget.message != null && widget.message!.reactions.isNotEmpty;
+    final reactedUsers = widget.message!.reactions.entries
+        .toList()
+        .expand((r) => r.value)
+        .toList();
 
     return Material(
       color: Colors.transparent,
@@ -166,8 +183,6 @@ class _PopupOptionState extends State<PopupOption> {
                   if (widget.hasEmoji)
                     Container(
                       width: widget.popupWidth,
-                      height: popupItemHeight,
-                      margin: EdgeInsets.only(bottom: containerSpacing),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(12),
@@ -179,44 +194,174 @@ class _PopupOptionState extends State<PopupOption> {
                           ),
                         ],
                       ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      child: Column(
                         children: [
-                          ...quickEmojis
-                              .map((emoji) => _buildReactionEmoji(emoji)),
-                          IconButton(
-                            padding: EdgeInsets.zero,
-                            icon: const Icon(Icons.add_reaction_outlined,
-                                size: 20),
-                            onPressed: _showEmojiPicker,
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              ...quickEmojis
+                                  .map((emoji) => _buildReactionEmoji(emoji)),
+                              IconButton(
+                                padding: EdgeInsets.zero,
+                                icon: const Icon(Icons.add_reaction_outlined,
+                                    size: 20),
+                                onPressed: _showEmojiPicker,
+                              ),
+                            ],
                           ),
+                          if (hasReaction)
+                            InkWell(
+                              onTap: _toggleReactionDetails,
+                              child: Container(
+                                height: popupItemHeight,
+                                width: widget.popupWidth,
+                                padding: const EdgeInsets.only(
+                                    left: 10, right: 10, top: 10),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: const BorderRadius.only(
+                                    bottomLeft: Radius.circular(12),
+                                    bottomRight: Radius.circular(12),
+                                  ),
+                                  border: Border(
+                                    top: BorderSide(
+                                        color: AppTheme.gray.shade200),
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text("${reactedUsers.length} Reactions"),
+                                    StackedAvatars(
+                                      users: reactedUsers,
+                                      bgColors: const [
+                                        Colors.blue,
+                                        Colors.green,
+                                        Colors.orange
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
                         ],
                       ),
                     ),
-                  Container(
-                    width: widget.popupWidth,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 10,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
+                  if (_showingReactionDetails)
+                    _buildReactionDetails()
+                  else
+                    Container(
+                      width: widget.popupWidth,
+                      margin: EdgeInsets.only(top: containerSpacing),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: widget.popupItems
+                            .map((item) => _buildOptionTile(item))
+                            .toList(),
+                      ),
                     ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: widget.popupItems
-                          .map((item) => _buildOptionTile(item))
-                          .toList(),
-                    ),
-                  ),
                 ],
               ),
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildReactionDetails() {
+    return Container(
+      width: widget.popupWidth,
+      margin: EdgeInsets.only(top: containerSpacing),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ListTile(
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back_ios, size: 18),
+              onPressed: _toggleReactionDetails,
+            ),
+            title: Text(
+              'Back',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            contentPadding: EdgeInsets.symmetric(horizontal: 8),
+          ),
+          Divider(height: 1),
+          ...widget.message!.reactions.entries.expand((entry) {
+            return entry.value.map((user) {
+              final initial =
+                  user["name"].split(' ').map((e) => e[0]).take(2).join();
+              final dateStr = user["timestamp"] != null
+                  ? DateFormat('MMM dd, hh:mm a').format(user["timestamp"])
+                  : "";
+
+              return Container(
+                decoration: BoxDecoration(
+                    border: Border(
+                        bottom: BorderSide(color: Colors.grey.shade300))),
+                child: ListTile(
+                  horizontalTitleGap: 2,
+                  contentPadding:
+                      EdgeInsets.symmetric(vertical: 0, horizontal: 8),
+                  leading: CircleAvatar(
+                    radius: 16,
+                    backgroundColor: Colors.green,
+                    child: Text(
+                      initial,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                  title: Text(
+                    user["name"],
+                    style: TextStyle(
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  subtitle: Text(
+                    dateStr,
+                    style: TextStyle(
+                      color: Colors.grey[600],
+                      fontSize: 12,
+                    ),
+                  ),
+                  trailing: Text(
+                    entry.key,
+                    style: TextStyle(fontSize: 20),
+                  ),
+                ),
+              );
+            });
+          }).toList(),
         ],
       ),
     );

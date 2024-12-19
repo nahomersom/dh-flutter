@@ -177,44 +177,49 @@ class _MessageBubbleState extends State<MessageBubble> {
                             ),
                           ),
                         SizedBox(height: 4.h),
-                        Align(
-                          alignment: Alignment.bottomRight,
-                          child: Text(
-                            widget.message.time,
-                            textAlign: TextAlign.right,
-                            style: AppConstants.bodySmallTextStyle.copyWith(
-                              color: widget.message.isOutgoing
-                                  ? AppConstants.white.withOpacity(0.7)
-                                  : AppConstants.grey500,
-                              fontSize: AppConstants.small.sp,
+                        Row(
+                          mainAxisAlignment: widget.message.reactions.isNotEmpty
+                              ? MainAxisAlignment.spaceBetween
+                              : MainAxisAlignment.end,
+                          children: [
+                            if (widget.message.reactions.isNotEmpty)
+                              ReactionBubble(
+                                color: widget.message.isOutgoing
+                                    ? AppTheme.primary.shade400
+                                    : null,
+                                reactions:
+                                    widget.message.reactions.entries.toList(),
+                                isSelected: widget.message.reactions.values.any(
+                                    (users) => users.any(
+                                        (user) => user['id'] == currentUserId)),
+                                onTap: () => widget.onReactionTap(
+                                    widget.message,
+                                    widget.message.reactions.keys.last),
+                                bgColors: [
+                                  Colors.blue,
+                                  Colors.green,
+                                  Colors.orange
+                                ], // Add more colors as needed
+                              ),
+                            Align(
+                              alignment: Alignment.bottomRight,
+                              child: Text(
+                                widget.message.time,
+                                textAlign: TextAlign.right,
+                                style: AppConstants.bodySmallTextStyle.copyWith(
+                                  color: widget.message.isOutgoing
+                                      ? AppConstants.white.withOpacity(0.7)
+                                      : AppConstants.grey500,
+                                  fontSize: AppConstants.small.sp,
+                                ),
+                              ),
                             ),
-                          ),
+                          ],
                         ),
                       ],
                     ),
                   ),
                 ),
-                if (widget.message.reactions.isNotEmpty)
-                  Padding(
-                    padding: EdgeInsets.only(
-                      left: widget.message.isOutgoing ? 0 : 40.w,
-                      right: widget.message.isOutgoing ? 0 : 40.w,
-                      top: 4.h,
-                    ),
-                    child: Wrap(
-                      spacing: 4.w,
-                      children: widget.message.reactions.entries.map((entry) {
-                        final hasReacted = entry.value.contains(currentUserId);
-                        return ReactionBubble(
-                          emoji: entry.key,
-                          count: entry.value.length,
-                          isSelected: hasReacted,
-                          onTap: () =>
-                              widget.onReactionTap(widget.message, entry.key),
-                        );
-                      }).toList(),
-                    ),
-                  ),
               ],
             ),
           ),

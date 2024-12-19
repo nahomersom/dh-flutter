@@ -19,7 +19,7 @@ class ChatMessage {
   final String? avatar;
   final ChatMessage? replyTo;
   final String? audioPath;
-  final Map<String, List<String>> reactions;
+  final Map<String, List<Map<String, dynamic>>> reactions;
 
   ChatMessage({
     this.sender,
@@ -30,23 +30,22 @@ class ChatMessage {
     this.avatar,
     this.replyTo,
     this.audioPath,
-    Map<String, List<String>>? reactions,
+    Map<String, List<Map<String, dynamic>>>? reactions,
   }) : reactions = reactions ?? {};
 
-  // Helper method to add a reaction
-  void addReaction(String emoji, String userId) {
+  void addReaction(String emoji, Map<String, dynamic> user) {
     if (!reactions.containsKey(emoji)) {
       reactions[emoji] = [];
     }
-    if (!reactions[emoji]!.contains(userId)) {
-      reactions[emoji]!.add(userId);
+    if (!reactions[emoji]!.any((u) => u['id'] == user['id'])) {
+      user["timetamp"] = DateTime.now();
+      reactions[emoji]!.add(user);
     }
   }
 
-  // Helper method to remove a reaction
   void removeReaction(String emoji, String userId) {
     if (reactions.containsKey(emoji)) {
-      reactions[emoji]!.remove(userId);
+      reactions[emoji]!.removeWhere((u) => u['id'] == userId);
       if (reactions[emoji]!.isEmpty) {
         reactions.remove(emoji);
       }
@@ -98,6 +97,33 @@ class _GroupChatScreenState extends State<GroupChatScreen>
         message:
             'Hey @lemmasolomon, hope all is well. I just sent request to the questionnaire you sent, let me in when you can.',
         time: '3:02 PM',
+        reactions: {
+          "🙌": [
+            {
+              'id': 'user3',
+              'name': 'MK',
+              'hasProfileImage': false,
+              'profileUrl': 'assets/images/john.png',
+              'timestamp': DateTime.now()
+            }
+          ],
+          "😁": [
+            {
+              'id': 'user2',
+              'name': 'ST',
+              'hasProfileImage': false,
+              'profileUrl': 'assets/images/john.png',
+              'timestamp': DateTime.now()
+            },
+            {
+              'id': 'user4',
+              'name': 'ST',
+              'hasProfileImage': false,
+              'profileUrl': 'assets/images/john.png',
+              'timestamp': DateTime.now()
+            }
+          ]
+        },
         isOutgoing: true,
       ),
       ChatMessage(
@@ -214,12 +240,18 @@ class _GroupChatScreenState extends State<GroupChatScreen>
 
   void _handleReaction(ChatMessage message, String emoji) {
     setState(() {
-      final currentUserId = 'current_user_id';
-      if (message.reactions.containsKey(emoji) &&
-          message.reactions[emoji]!.contains(currentUserId)) {
-        message.removeReaction(emoji, currentUserId);
+      Map<String, dynamic> currentUser = {
+        'id': 'user1',
+        'name': 'JN',
+        'hasProfileImage': false,
+        'profileUrl': 'assets/images/john.png',
+      };
+      bool hasReacted = message.reactions.entries
+          .any((r) => r.value.any((em) => em["id"] == currentUser["id"]));
+      if (hasReacted) {
+        message.removeReaction(emoji, currentUser["id"]);
       } else {
-        message.addReaction(emoji, currentUserId);
+        message.addReaction(emoji, currentUser);
       }
     });
   }

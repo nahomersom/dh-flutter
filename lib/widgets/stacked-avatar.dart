@@ -15,9 +15,18 @@ class StackedAvatars extends StatelessWidget {
     final bool hasExtra = users.length > 2; // Check if more than 2 items exist
     final displayUsers =
         hasExtra ? users.take(2).toList() : users; // Limit to 2
+
+    const double avatarSize = 34; // Full diameter of avatar (17 radius * 2)
+    const double overlap = 14; // Overlap between avatars
+
+    // Dynamically calculate width based on number of avatars and overlap
+    final int totalVisibleAvatars = displayUsers.length + (hasExtra ? 1 : 0);
+    final double calculatedWidth = totalVisibleAvatars > 1
+        ? avatarSize + (totalVisibleAvatars - 1) * (avatarSize - overlap)
+        : avatarSize;
     return SizedBox(
       height: 40, // Adjust height for proper avatar display
-      width: 100, // Adjust width for proper avatar stacking
+      width: calculatedWidth,
       child: Stack(
         children:
             List.generate(displayUsers.length + (hasExtra ? 1 : 0), (index) {
