@@ -3,13 +3,12 @@ import 'dart:async';
 import 'package:dh_flutter_v2/constants/app_constants.dart';
 import 'package:dh_flutter_v2/constants/app_theme.dart';
 import 'package:dh_flutter_v2/screens/messages/widgets/message_bubble.dart';
-import 'package:dh_flutter_v2/screens/messages/widgets/message_input.dart';
 import 'package:dh_flutter_v2/screens/messages/widgets/pinned_missages.dart';
+import 'package:dh_flutter_v2/screens/messages/widgets/popup_option.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
-import 'package:intl/intl.dart';
 
 class ChatMessage {
   final String? sender;
@@ -19,7 +18,8 @@ class ChatMessage {
   final bool isAnnouncement;
   final String? avatar;
   final ChatMessage? replyTo;
-  final String? audioPath; // Optional field for audio messages
+  final String? audioPath;
+  final Map<String, List<Map<String, dynamic>>> reactions;
 
   ChatMessage({
     this.sender,
@@ -30,7 +30,27 @@ class ChatMessage {
     this.avatar,
     this.replyTo,
     this.audioPath,
-  });
+    Map<String, List<Map<String, dynamic>>>? reactions,
+  }) : reactions = reactions ?? {};
+
+  void addReaction(String emoji, Map<String, dynamic> user) {
+    if (!reactions.containsKey(emoji)) {
+      reactions[emoji] = [];
+    }
+    if (!reactions[emoji]!.any((u) => u['id'] == user['id'])) {
+      user["timetamp"] = DateTime.now();
+      reactions[emoji]!.add(user);
+    }
+  }
+
+  void removeReaction(String emoji, String userId) {
+    if (reactions.containsKey(emoji)) {
+      reactions[emoji]!.removeWhere((u) => u['id'] == userId);
+      if (reactions[emoji]!.isEmpty) {
+        reactions.remove(emoji);
+      }
+    }
+  }
 }
 
 class GroupChatScreen extends StatefulWidget {
@@ -77,6 +97,33 @@ class _GroupChatScreenState extends State<GroupChatScreen>
         message:
             'Hey @lemmasolomon, hope all is well. I just sent request to the questionnaire you sent, let me in when you can.',
         time: '3:02 PM',
+        reactions: {
+          "🙌": [
+            {
+              'id': 'user3',
+              'name': 'MK',
+              'hasProfileImage': false,
+              'profileUrl': 'assets/images/john.png',
+              'timestamp': DateTime.now()
+            }
+          ],
+          "😁": [
+            {
+              'id': 'user2',
+              'name': 'ST',
+              'hasProfileImage': false,
+              'profileUrl': 'assets/images/john.png',
+              'timestamp': DateTime.now()
+            },
+            {
+              'id': 'user4',
+              'name': 'ST',
+              'hasProfileImage': false,
+              'profileUrl': 'assets/images/john.png',
+              'timestamp': DateTime.now()
+            }
+          ]
+        },
         isOutgoing: true,
       ),
       ChatMessage(
@@ -191,13 +238,33 @@ class _GroupChatScreenState extends State<GroupChatScreen>
     _focusNode.requestFocus();
   }
 
+  void _handleReaction(ChatMessage message, String emoji) {
+    setState(() {
+      Map<String, dynamic> currentUser = {
+        'id': 'user1',
+        'name': 'JN',
+        'hasProfileImage': false,
+        'profileUrl': 'assets/images/john.png',
+      };
+      bool hasReacted = message.reactions.entries
+          .any((r) => r.value.any((em) => em["id"] == currentUser["id"]));
+      if (hasReacted) {
+        message.removeReaction(emoji, currentUser["id"]);
+      } else {
+        message.addReaction(emoji, currentUser);
+      }
+    });
+  }
+
   void _showMessageOptions(
       BuildContext context, ChatMessage message, Offset globalPosition) {
+    final double popupWidth = MediaQuery.of(context).size.width * 0.5;
     showDialog(
       context: context,
-      builder: (context) => SimpleDialog(
-        children: [
-          _buildOptionTile(
+      builder: (context) => PopupOption(
+        position: globalPosition,
+        popupItems: [
+          PopupItem(
             icon: Icons.reply,
             title: 'Reply',
             onTap: () {
@@ -205,7 +272,7 @@ class _GroupChatScreenState extends State<GroupChatScreen>
               _handleReply(message);
             },
           ),
-          _buildOptionTile(
+          PopupItem(
             icon: Icons.copy,
             title: 'Copy',
             onTap: () {
@@ -213,55 +280,37 @@ class _GroupChatScreenState extends State<GroupChatScreen>
               Navigator.pop(context);
             },
           ),
-          _buildOptionTile(
+          PopupItem(
             icon: Icons.forward,
             title: 'Forward',
             onTap: () {
-              // Add forward functionality
+              // Add copy functionality
               Navigator.pop(context);
             },
           ),
-          _buildOptionTile(
+          PopupItem(
             icon: Icons.push_pin,
             title: 'Pin',
             onTap: () {
-              // Add pin functionality
+              // Add copy functionality
               Navigator.pop(context);
             },
           ),
-          _buildOptionTile(
+          PopupItem(
             icon: Icons.delete,
             title: 'Delete',
+            isDestructive: true,
             onTap: () {
-              // Add delete functionality
+              // Add copy functionality
               Navigator.pop(context);
             },
-            isDestructive: true,
-          ),
+          )
         ],
+        hasEmoji: true,
+        message: message,
+        popupWidth: popupWidth,
+        handleReaction: _handleReaction,
       ),
-    );
-  }
-
-  Widget _buildOptionTile({
-    required IconData icon,
-    required String title,
-    required VoidCallback onTap,
-    bool isDestructive = false,
-  }) {
-    return ListTile(
-      leading: Icon(
-        icon,
-        color: isDestructive ? Colors.red : AppConstants.grey600,
-      ),
-      title: Text(
-        title,
-        style: TextStyle(
-          color: isDestructive ? Colors.red : AppConstants.grey800,
-          fontSize: 16.sp,
-        ),
-      ),
-      onTap: onTap,
     );
   }
 
@@ -385,12 +434,23 @@ class _GroupChatScreenState extends State<GroupChatScreen>
                   );
                 }
                 final message = _messages[index - 1];
-                return GestureDetector(
-                  onLongPressStart: (LongPressStartDetails details) {
-                    _showMessageOptions(
-                        context, message, details.globalPosition);
+                return Dismissible(
+                  key: Key(message.time),
+                  direction: DismissDirection.startToEnd,
+                  confirmDismiss: (direction) async {
+                    _handleReply(message);
+                    return false;
                   },
-                  child: MessageBubble(message: message),
+                  child: GestureDetector(
+                    onLongPressStart: (LongPressStartDetails details) {
+                      _showMessageOptions(
+                          context, message, details.globalPosition);
+                    },
+                    child: MessageBubble(
+                      message: message,
+                      onReactionTap: _handleReaction,
+                    ),
+                  ),
                 );
               },
             ),

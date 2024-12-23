@@ -1,16 +1,18 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:dh_flutter_v2/constants/app_theme.dart';
 import 'package:dh_flutter_v2/screens/messages/group_chat_screen.dart';
+import 'package:dh_flutter_v2/screens/messages/widgets/reaction_bubble.dart';
 import 'package:flutter/material.dart';
 import 'package:dh_flutter_v2/constants/app_constants.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class MessageBubble extends StatefulWidget {
   final ChatMessage message;
-
+  final Function(ChatMessage, String) onReactionTap;
   const MessageBubble({
     Key? key,
     required this.message,
+    required this.onReactionTap,
   }) : super(key: key);
 
   @override
@@ -22,6 +24,7 @@ class _MessageBubbleState extends State<MessageBubble> {
   bool _isPlaying = false;
   Duration _currentPosition = Duration.zero;
   Duration _totalDuration = Duration.zero;
+  final String currentUserId = 'current_user_id';
 
   @override
   void initState() {
@@ -174,18 +177,44 @@ class _MessageBubbleState extends State<MessageBubble> {
                             ),
                           ),
                         SizedBox(height: 4.h),
-                        Align(
-                          alignment: Alignment.bottomRight,
-                          child: Text(
-                            widget.message.time,
-                            textAlign: TextAlign.right,
-                            style: AppConstants.bodySmallTextStyle.copyWith(
-                              color: widget.message.isOutgoing
-                                  ? AppConstants.white.withOpacity(0.7)
-                                  : AppConstants.grey500,
-                              fontSize: AppConstants.small.sp,
+                        Row(
+                          mainAxisAlignment: widget.message.reactions.isNotEmpty
+                              ? MainAxisAlignment.spaceBetween
+                              : MainAxisAlignment.end,
+                          children: [
+                            if (widget.message.reactions.isNotEmpty)
+                              ReactionBubble(
+                                color: widget.message.isOutgoing
+                                    ? AppTheme.primary.shade400
+                                    : null,
+                                reactions:
+                                    widget.message.reactions.entries.toList(),
+                                isSelected: widget.message.reactions.values.any(
+                                    (users) => users.any(
+                                        (user) => user['id'] == currentUserId)),
+                                onTap: () => widget.onReactionTap(
+                                    widget.message,
+                                    widget.message.reactions.keys.last),
+                                bgColors: [
+                                  Colors.blue,
+                                  Colors.green,
+                                  Colors.orange
+                                ], // Add more colors as needed
+                              ),
+                            Align(
+                              alignment: Alignment.bottomRight,
+                              child: Text(
+                                widget.message.time,
+                                textAlign: TextAlign.right,
+                                style: AppConstants.bodySmallTextStyle.copyWith(
+                                  color: widget.message.isOutgoing
+                                      ? AppConstants.white.withOpacity(0.7)
+                                      : AppConstants.grey500,
+                                  fontSize: AppConstants.small.sp,
+                                ),
+                              ),
                             ),
-                          ),
+                          ],
                         ),
                       ],
                     ),
