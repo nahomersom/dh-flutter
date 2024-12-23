@@ -10,6 +10,7 @@ import 'package:dh_flutter_v2/screens/auth%5Bv2%5D/two_step_verification.dart';
 import 'package:dh_flutter_v2/screens/home/dashboard_screen.dart';
 import 'package:dh_flutter_v2/screens/messages/group_chat_screen.dart';
 import 'package:dh_flutter_v2/screens/messages/messages_screen.dart';
+import 'package:dh_flutter_v2/screens/messages/new_message_screen.dart';
 import 'package:dh_flutter_v2/screens/screens.dart';
 import 'package:dh_flutter_v2/screens/splash/introduction_screen.dart';
 import 'package:dh_flutter_v2/screens/workspace.dart';
@@ -35,6 +36,10 @@ class MyAppRouter {
                 GoRoute(
                   path: 'group-chat',
                   builder: (context, state) => GroupChatScreen(),
+                ),
+                GoRoute(
+                  path: 'new-message',
+                  builder: (context, state) => NewMessageScreen(),
                 ),
               ]),
           GoRoute(

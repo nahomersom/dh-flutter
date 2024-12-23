@@ -4,6 +4,7 @@ import 'package:dh_flutter_v2/screens/home/dashboard_screen.dart';
 import 'package:dh_flutter_v2/screens/messages/messages_screen.dart';
 import 'package:dh_flutter_v2/screens/settings/profile_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
 // This is the type used by the popup menu below.
@@ -83,12 +84,66 @@ class _WorkspaceState extends State<Workspace> {
                     ),
                   ),
                   CircleAvatar(
-                    backgroundColor: AppConstants.grey300,
-                    // radius: 50,
-                    child: IconButton(
+                    backgroundColor:
+                        const Color(0xFFF2F2F2), // Light grey background
+                    child: PopupMenuButton<int>(
+                      color: const Color(0xFFF2F2F2), // Popup background color
                       icon: const Icon(Icons.more_horiz,
-                          color: AppConstants.grey700),
-                      onPressed: () {},
+                          color: Colors.grey), // Icon color
+                      offset: const Offset(
+                          0, 50), // Position the popup below the button
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      itemBuilder: (BuildContext context) => [
+                        // Item 1: New Messages
+                        _buildPopupMenuItem(
+                          value: 1,
+                          icon: Icons.message_outlined,
+                          text: 'New Messages',
+                        ),
+                        const PopupMenuDivider(), // Divider
+
+                        // Item 2: New Groups
+                        _buildPopupMenuItem(
+                          value: 2,
+                          icon: Icons.group_add_outlined,
+                          text: 'New Group',
+                        ),
+                        const PopupMenuDivider(), // Divider
+
+                        // Item 3: Add Contacts
+                        _buildPopupMenuItem(
+                          value: 3,
+                          icon: Icons.person_add_outlined,
+                          text: 'Add Contacts',
+                        ),
+                        const PopupMenuDivider(), // Divider
+
+                        // Item 4: Scan
+                        _buildPopupMenuItem(
+                          value: 4,
+                          icon: Icons.qr_code_scanner_outlined,
+                          text: 'Scan',
+                        ),
+                      ],
+                      onSelected: (value) {
+                        // Handle the selected value
+                        switch (value) {
+                          case 1:
+                            context.go('/workspace/messages/new-message');
+                            break;
+                          case 2:
+                            print('New Groups Selected');
+                            break;
+                          case 3:
+                            print('Add Contacts Selected');
+                            break;
+                          case 4:
+                            print('Scan Selected');
+                            break;
+                        }
+                      },
                     ),
                   ),
                 ],
@@ -128,6 +183,31 @@ class _WorkspaceState extends State<Workspace> {
             ),
           ),
         ));
+  }
+
+  /// Helper method to create a PopupMenuItem
+  PopupMenuItem<int> _buildPopupMenuItem({
+    required int value,
+    required IconData icon,
+    required String text,
+  }) {
+    return PopupMenuItem<int>(
+      value: value,
+      child: SizedBox(
+        width: 160.sp,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(text,
+                style: AppConstants.bodyTextStyle.copyWith(
+                  fontWeight: FontWeight.w500,
+                  color: AppConstants.grey800,
+                )),
+            Icon(icon, color: Colors.grey[700], size: 20), // Icon
+          ],
+        ),
+      ),
+    );
   }
 }
 
