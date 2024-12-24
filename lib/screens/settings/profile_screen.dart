@@ -1,10 +1,17 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:dh_flutter_v2/constants/app_theme.dart';
 import 'package:dh_flutter_v2/constants/constants.dart';
 import 'package:dh_flutter_v2/routes/routes.dart';
 import 'package:dh_flutter_v2/screens/screens.dart';
+import 'package:dh_flutter_v2/screens/settings/widgets/profile_bottom_sheet_content.dart';
 import 'package:dh_flutter_v2/widgets/cutom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -14,13 +21,68 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  File? _profile_image;
+  late GoRouter _router;
   @override
   void initState() {
     SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
       statusBarColor: Colors.white,
       statusBarIconBrightness: Brightness.dark,
     ));
+    _router = GoRouter.of(context);
+    _router.routerDelegate.addListener(_onRouteChange);
     super.initState();
+  }
+
+  Future<void> _onRouteChange() async {
+    print("route path llllllll");
+    print(_router.state?.path);
+    if (_router.state?.path == 'profile') {
+      print("Route matched, performing logic");
+      await getProfileImage(); // Call your method here
+    }
+  }
+
+  // @override
+  // void didChangeDependencies() {
+  //   super.didChangeDependencies();
+
+  //   print("didChangeDependencies calleddddddddddddddddddd");
+  //   getProfileImage(); // Call your method here
+  // }
+
+// Retrieve image as File
+  Future<void> getProfileImage() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final base64String = prefs.getString("profile-image");
+
+      if (base64String == null) return null;
+
+      // Decode base64 string to bytes
+      final bytes = base64Decode(base64String);
+
+      // Create temporary file
+      final tempDir = Directory.systemTemp;
+      final tempFile = File('${tempDir.path}/profile_image.jpg');
+
+      // Write bytes to file
+      await tempFile.writeAsBytes(bytes);
+      setState(() {
+        _profile_image = tempFile;
+      });
+    } catch (e) {
+      print('Error retrieving image: $e');
+    }
+  }
+
+  void _showBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) => const ProfileBottomSheetContent(),
+    );
   }
 
   @override
@@ -53,6 +115,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             color: Colors.black,
                           )),
                     ),
+                    IconButton(
+                        onPressed: () {
+                          context.go("/workspace/profile/edit-profile");
+                        },
+                        icon: Icon(
+                          Icons.edit_note_outlined,
+                          size: 30,
+                          color: AppTheme.baseBlack,
+                        ))
                   ],
                 ),
                 bottom: PreferredSize(
@@ -68,9 +139,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     children: [
                       CircleAvatar(
                         radius: 30,
+                        backgroundImage: _profile_image != null
+                            ? FileImage(_profile_image!)
+                            : null,
                         backgroundColor: Colors.grey[300],
-                        child: const Icon(Icons.person,
-                            size: 40, color: Colors.white),
+                        child: _profile_image != null
+                            ? null
+                            : const Icon(Icons.person,
+                                size: 40, color: Colors.white),
                       ),
                       // const SizedBox(width: 16),
                     ],
@@ -175,8 +251,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           color: AppConstants.grey500,
                                         ),
                                         borderRadius: BorderRadius.circular(5)),
-                                    child: const Icon(
-                                      Icons.more_horiz,
+                                    child: IconButton(
+                                      onPressed: () {
+                                        _showBottomSheet(context);
+                                      },
+                                      icon: const Icon(
+                                        Icons.more_horiz,
+                                      ),
                                     ),
                                   ),
                                   const SizedBox(

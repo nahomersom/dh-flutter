@@ -12,6 +12,8 @@ import 'package:dh_flutter_v2/screens/messages/group_chat_screen.dart';
 import 'package:dh_flutter_v2/screens/messages/messages_screen.dart';
 import 'package:dh_flutter_v2/screens/messages/new_message_screen.dart';
 import 'package:dh_flutter_v2/screens/screens.dart';
+import 'package:dh_flutter_v2/screens/settings/create_organization_screen.dart';
+import 'package:dh_flutter_v2/screens/settings/edit_profile_screen.dart';
 import 'package:dh_flutter_v2/screens/splash/introduction_screen.dart';
 import 'package:dh_flutter_v2/screens/workspace.dart';
 import 'package:go_router/go_router.dart';
@@ -47,9 +49,19 @@ class MyAppRouter {
             builder: (context, state) => DashboardScreen(),
           ),
           GoRoute(
-            path: 'profile',
-            builder: (context, state) => ProfileScreen(),
-          ),
+              path: 'profile',
+              builder: (context, state) => ProfileScreen(),
+              routes: [
+                GoRoute(
+                  path: 'create-organization-setting',
+                  builder: (context, state) =>
+                      CreateOrganizationSettingScreen(),
+                ),
+                GoRoute(
+                  path: 'edit-profile',
+                  builder: (context, state) => EditProfileScreen(),
+                )
+              ]),
         ],
       ),
       GoRoute(
@@ -94,11 +106,11 @@ class MyAppRouter {
             ),
           ]),
       GoRoute(
-        path: 'profile-image',
+        path: '/profile-image',
         builder: (context, state) => ProfilePictureScreen(),
       ),
       GoRoute(
-        path: 'setup-profile',
+        path: '/setup-profile',
         builder: (context, state) => ProfileSetupScreen(),
       ),
     ],

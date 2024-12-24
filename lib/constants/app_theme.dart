@@ -58,17 +58,17 @@ class AppTheme {
   static const MaterialColor info = MaterialColor(
     0xFF0A9952,
     <int, Color>{
-      25: Color(0xFFF2FFF9),
-      50: Color(0xFFD7FFEB),
-      100: Color(0xFF7DFEB9),
-      200: Color(0xFF44E790),
-      300: Color(0xFF2FD181),
-      400: Color(0xFF1DB469),
-      500: Color(0xFF11A75C),
-      600: Color(0xFF0A9952),
-      700: Color(0xFF048746),
-      800: Color(0xFF046A37),
-      900: Color(0xFF02542B),
+      25: Color(0xFFF6F9FE),
+      50: Color(0xFFE8F1FD),
+      100: Color(0xFFD1E3FA),
+      200: Color(0xFFBAD5F8),
+      300: Color(0xFFA3C7F6),
+      400: Color(0xFF76ABF1),
+      500: Color(0xFF488FED),
+      600: Color(0xFF1A73E8),
+      700: Color(0xFF155CBA),
+      800: Color(0xFF10458B),
+      900: Color(0xFF082246),
     },
   );
 
