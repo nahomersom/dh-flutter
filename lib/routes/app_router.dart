@@ -14,6 +14,8 @@ import 'package:dh_flutter_v2/screens/messages/new_message_screen.dart';
 import 'package:dh_flutter_v2/screens/screens.dart';
 import 'package:dh_flutter_v2/screens/settings/create_organization_screen.dart';
 import 'package:dh_flutter_v2/screens/settings/edit_profile_screen.dart';
+import 'package:dh_flutter_v2/screens/settings/privacy_&_security_screen.dart';
+import 'package:dh_flutter_v2/screens/settings/profile_setting_screen.dart';
 import 'package:dh_flutter_v2/screens/splash/introduction_screen.dart';
 import 'package:dh_flutter_v2/screens/workspace.dart';
 import 'package:go_router/go_router.dart';
@@ -60,7 +62,16 @@ class MyAppRouter {
                 GoRoute(
                   path: 'edit-profile',
                   builder: (context, state) => EditProfileScreen(),
-                )
+                ),
+                GoRoute(
+                    path: 'setting',
+                    builder: (context, state) => ProfileSettingScreen(),
+                    routes: [
+                      GoRoute(
+                        path: 'privacy-security',
+                        builder: (context, state) => PrivacyAndSecurityScreen(),
+                      ),
+                    ])
               ]),
         ],
       ),

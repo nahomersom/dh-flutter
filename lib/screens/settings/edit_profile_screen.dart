@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:dh_flutter_v2/constants/app_theme.dart';
 import 'package:dh_flutter_v2/screens/settings/widgets/profile_bottom_sheet_content.dart';
+import 'package:dh_flutter_v2/utils/helper.dart';
 import 'package:dh_flutter_v2/widgets/shared_textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -58,6 +59,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         isLoading = false;
       });
     }
+    Navigator.of(context).pop();
+    context.go("/workspace/profile");
   }
 
   late GoRouter _router;
@@ -119,116 +122,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         });
       }
     }
-  }
-
-  void _showConfirmationDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return isLoading
-            ? const Center(
-                child: CircularProgressIndicator(
-                  color: AppTheme.primary,
-                ),
-              )
-            : AlertDialog(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                title: Text(
-                  "Are you sure you want to make changes?",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 20,
-                    color: AppTheme.gray.shade600,
-                  ),
-                ),
-                content: Text(
-                  "Changes applied cannot be recovered.",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.grey.shade500,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-                // Remove actionsPadding and actionsAlignment
-                actions: [
-                  Container(
-                    decoration: BoxDecoration(
-                      border: Border(
-                        top: BorderSide(
-                          color: Colors.grey.shade300,
-                          width: 0.5,
-                        ),
-                      ),
-                    ),
-                    child: IntrinsicHeight(
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: TextButton(
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                              style: TextButton.styleFrom(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 16),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.zero,
-                                ),
-                              ),
-                              child: Text(
-                                "Cancel",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: Colors.grey.shade500,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
-                            ),
-                          ),
-                          VerticalDivider(
-                            color: Colors.grey.shade300,
-                            width: 1,
-                            thickness: 0.8,
-                          ),
-                          Expanded(
-                            child: TextButton(
-                              onPressed: () async {
-                                await _saveData();
-
-                                Navigator.of(context).pop();
-                                context.go("/workspace/profile");
-                              },
-                              style: TextButton.styleFrom(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 16),
-                                shape: const RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.zero,
-                                ),
-                              ),
-                              child: Text(
-                                "Confirm",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: AppTheme.info.shade600,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              );
-      },
-    );
   }
 
   @override
@@ -383,7 +276,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 onPressed: _errorMessage.isNotEmpty
                     ? null
                     : () {
-                        _showConfirmationDialog(context);
+                        showConfirmationDialog(
+                            context: context,
+                            title: "Are you sure you want to make changes?",
+                            content: "Changes applied cannot be recovered.",
+                            onConfirm: _saveData);
                       },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppTheme.primary.shade600,

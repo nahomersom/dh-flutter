@@ -1,5 +1,4 @@
 import 'package:dh_flutter_v2/constants/app_theme.dart';
-import 'package:dh_flutter_v2/routes/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -116,7 +115,9 @@ class _ProfileBottomSheetContentState extends State<ProfileBottomSheetContent> {
               _MenuItem(
                 icon: Icons.settings_outlined,
                 title: 'Settings',
-                onTap: () {},
+                onTap: () {
+                  context.go("/workspace/profile/setting");
+                },
               ),
               _MenuItem(
                 icon: Icons.contact_page_outlined,
