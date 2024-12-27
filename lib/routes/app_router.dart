@@ -68,9 +68,24 @@ class MyAppRouter {
                     builder: (context, state) => ProfileSettingScreen(),
                     routes: [
                       GoRoute(
-                        path: 'privacy-security',
-                        builder: (context, state) => PrivacyAndSecurityScreen(),
-                      ),
+                          path: 'privacy-security',
+                          builder: (context, state) =>
+                              PrivacyAndSecurityScreen(),
+                          routes: [
+                            GoRoute(
+                                path: 'verify-otp',
+                                builder: (context, state) {
+                                  final extra =
+                                      state.extra as Map<String, dynamic>?;
+                                  final phoneNumber = extra?['phone'] ?? '';
+                                  final from = extra?['from'] ?? '';
+
+                                  return OtpScreen(
+                                    phoneNumber: phoneNumber,
+                                    from: from,
+                                  );
+                                })
+                          ]),
                     ])
               ]),
         ],

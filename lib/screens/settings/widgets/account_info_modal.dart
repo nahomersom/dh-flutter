@@ -3,32 +3,44 @@ import 'package:dh_flutter_v2/utils/helper.dart';
 import 'package:dh_flutter_v2/widgets/shared_textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 
-class PasswordAddModal extends StatefulWidget {
-  final TextEditingController passwordController;
-  final TextEditingController confirmPasswordController;
+class AccountInfoModal extends StatefulWidget {
+  final TextEditingController? passwordController;
+  final TextEditingController? confirmPasswordController;
   final TextEditingController? newPasswordController;
+  final TextEditingController? emailController;
   final bool isUpdate;
+  final bool isEmail;
 
-  const PasswordAddModal(
+  const AccountInfoModal(
       {Key? key,
       required this.passwordController,
       required this.confirmPasswordController,
       this.newPasswordController,
-      this.isUpdate = false})
+      this.emailController,
+      this.isUpdate = false,
+      this.isEmail = false})
       : super(key: key);
 
   @override
-  State<PasswordAddModal> createState() => _PasswordAddModalState();
+  State<AccountInfoModal> createState() => _AccountInfoModalState();
 }
 
-class _PasswordAddModalState extends State<PasswordAddModal> {
+class _AccountInfoModalState extends State<AccountInfoModal> {
   void _savePassword() {
     if ((widget.isUpdate
             ? widget.newPasswordController!.text
-            : widget.passwordController.text) ==
-        widget.confirmPasswordController.text) {
-      Navigator.pop(context, widget.passwordController.text);
+            : widget.passwordController!.text) ==
+        widget.confirmPasswordController!.text) {
+      context.go(
+        "/workspace/profile/setting/privacy-security/verify-otp/",
+        extra: {
+          'phone': "09898787989",
+          'from': "setting",
+        },
+      );
+      // Navigator.pop(context, widget.passwordController!.text);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -69,8 +81,8 @@ class _PasswordAddModalState extends State<PasswordAddModal> {
                     children: [
                       Text(
                         widget.isUpdate
-                            ? 'Change Password'
-                            : 'Create Verification Password',
+                            ? 'Change ${widget.isEmail ? "Email" : "Password"}'
+                            : 'Create ${widget.isEmail ? "Email" : "Verification Password"}',
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.w700,
@@ -86,28 +98,36 @@ class _PasswordAddModalState extends State<PasswordAddModal> {
                     ],
                   ),
                   SizedBox(height: 24.h),
-                  SharedTextFormField(
-                    controller: widget.passwordController,
-                    isPassword: true,
-                    label: widget.isUpdate
-                        ? 'Insert Old Password'
-                        : 'Verification Password',
-                  ),
-                  SizedBox(height: 8.h),
-                  if (widget.isUpdate)
+                  if (widget.isEmail) ...[
                     SharedTextFormField(
-                      controller: widget.newPasswordController!,
-                      isPassword: true,
-                      label: 'New Password',
+                      controller: widget.emailController!,
+                      isPassword: false,
+                      label: 'Email',
                     ),
-                  SizedBox(height: 8.h),
-                  SharedTextFormField(
-                    controller: widget.confirmPasswordController,
-                    isPassword: true,
-                    label: widget.isUpdate
-                        ? 'Confirm New Password'
-                        : 'Confirm Password',
-                  ),
+                  ] else ...[
+                    SharedTextFormField(
+                      controller: widget.passwordController!,
+                      isPassword: true,
+                      label: widget.isUpdate
+                          ? 'Insert Old Password'
+                          : 'Verification Password',
+                    ),
+                    SizedBox(height: 8.h),
+                    if (widget.isUpdate)
+                      SharedTextFormField(
+                        controller: widget.newPasswordController!,
+                        isPassword: true,
+                        label: 'New Password',
+                      ),
+                    SizedBox(height: 8.h),
+                    SharedTextFormField(
+                      controller: widget.confirmPasswordController!,
+                      isPassword: true,
+                      label: widget.isUpdate
+                          ? 'Confirm New Password'
+                          : 'Confirm Password',
+                    ),
+                  ],
                   SizedBox(height: 24.h),
                   ElevatedButton(
                     onPressed: () {
@@ -125,9 +145,9 @@ class _PasswordAddModalState extends State<PasswordAddModal> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    child: const Text(
-                      'Create Password',
-                      style: TextStyle(
+                    child: Text(
+                      '${widget.isUpdate ? "Update" : "create"} ${widget.isEmail ? "Email" : "password"}',
+                      style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w700,
                         color: AppTheme.baseWhite,

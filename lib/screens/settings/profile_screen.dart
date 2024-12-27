@@ -31,25 +31,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
     ));
     _router = GoRouter.of(context);
     _router.routerDelegate.addListener(_onRouteChange);
+    getProfileImage();
     super.initState();
   }
 
   Future<void> _onRouteChange() async {
-    print("route path llllllll");
-    print(_router.state?.path);
-    if (_router.state?.path == 'profile') {
-      print("Route matched, performing logic");
-      await getProfileImage(); // Call your method here
-    }
+    if (!mounted) return;
+    await getProfileImage();
   }
-
-  // @override
-  // void didChangeDependencies() {
-  //   super.didChangeDependencies();
-
-  //   print("didChangeDependencies calleddddddddddddddddddd");
-  //   getProfileImage(); // Call your method here
-  // }
 
 // Retrieve image as File
   Future<void> getProfileImage() async {
@@ -63,8 +52,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
       final bytes = base64Decode(base64String);
 
       // Create temporary file
+      // Generate a unique temporary file
       final tempDir = Directory.systemTemp;
-      final tempFile = File('${tempDir.path}/profile_image.jpg');
+      final tempFile = File(
+          '${tempDir.path}/profile_image_${DateTime.now().millisecondsSinceEpoch}.jpg');
 
       // Write bytes to file
       await tempFile.writeAsBytes(bytes);
@@ -72,6 +63,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         _profile_image = tempFile;
       });
     } catch (e) {
+      setState(() {
+        _profile_image = null;
+      });
       print('Error retrieving image: $e');
     }
   }

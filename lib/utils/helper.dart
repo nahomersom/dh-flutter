@@ -4,6 +4,7 @@ import 'package:dh_flutter_v2/constants/app_theme.dart';
 import 'package:dh_flutter_v2/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class RestrictedInputFormatter extends TextInputFormatter {
   final RegExp _restrictedPattern;
@@ -109,7 +110,9 @@ void showConfirmationDialog(
                   ),
                   Expanded(
                     child: TextButton(
-                      onPressed: onConfirm,
+                      onPressed: () async {
+                        await onConfirm();
+                      },
                       style: TextButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: const RoundedRectangleBorder(

@@ -48,7 +48,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         final base64String = base64Encode(bytes);
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString("profile-image", base64String);
-        print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@22");
         setState(() {
           isLoading = false;
         });
@@ -59,8 +58,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         isLoading = false;
       });
     }
-    Navigator.of(context).pop();
-    context.go("/workspace/profile");
   }
 
   late GoRouter _router;
@@ -68,14 +65,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   void initState() {
     _router = GoRouter.of(context);
     _router.routerDelegate.addListener(_onRouteChange);
+    getProfileImage();
     super.initState();
   }
 
   Future<void> _onRouteChange() async {
     if (!mounted) return; // Check if widget is still mounted
-    if (_router.state?.path == 'edit-profile') {
-      await getProfileImage(); // Call your method here
-    }
+
+    await getProfileImage();
   }
 
   //Retrieve image as File
@@ -96,6 +93,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       // Write bytes to file
       await tempFile.writeAsBytes(bytes);
       setState(() {
+        print("writing image ...gettingggggggggggggggg");
         _image = XFile(tempFile.path);
       });
     } catch (e) {
@@ -111,11 +109,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
       if (faces.length == 1) {
         setState(() {
+          print("successssssssssssssssssssssssssssssssssssss");
           _image = pickedFile;
           _errorMessage = ''; // Clear any previous error
         });
       } else {
         setState(() {
+          print("erorrrrrrrrrrrrrrrrrrrrrr");
           _image = pickedFile;
           _errorMessage =
               "The picture you provided doesn't meet our requirements. Please ensure it's an authenticated ID photo and try again.";
@@ -280,7 +280,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             context: context,
                             title: "Are you sure you want to make changes?",
                             content: "Changes applied cannot be recovered.",
-                            onConfirm: _saveData);
+                            onConfirm: () async {
+                              await _saveData();
+                              if (mounted) {
+                                context.go("/workspace/profile");
+                              }
+                            });
                       },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppTheme.primary.shade600,

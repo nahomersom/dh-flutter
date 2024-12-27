@@ -1,6 +1,6 @@
 import 'package:dh_flutter_v2/constants/app_theme.dart';
 import 'package:dh_flutter_v2/screens/settings/widgets/delete_account_modal.dart';
-import 'package:dh_flutter_v2/screens/settings/widgets/password_add_modal.dart';
+import 'package:dh_flutter_v2/screens/settings/widgets/account_info_modal.dart';
 import 'package:dh_flutter_v2/screens/settings/widgets/privacy_setting_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -19,6 +19,7 @@ class _PrivacyAndSecurityScreenState extends State<PrivacyAndSecurityScreen> {
   final _confirmPasswordController = TextEditingController();
   final _newPasswordController = TextEditingController();
   final _deletePasswordController = TextEditingController();
+  final _emailController = TextEditingController();
 
   // Function to show the bottom sheet
   Future<String?> showModal(BuildContext context, String type) {
@@ -27,12 +28,14 @@ class _PrivacyAndSecurityScreenState extends State<PrivacyAndSecurityScreen> {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
-        return type == "password"
-            ? PasswordAddModal(
+        return type == "password" || type == "email"
+            ? AccountInfoModal(
                 passwordController: _passwordController,
                 confirmPasswordController: _confirmPasswordController,
                 newPasswordController: _newPasswordController,
+                emailController: _emailController,
                 isUpdate: true,
+                isEmail: type == "email",
               )
             : type == "lastSeen" || type == "phone"
                 ? PrivacySettingModal(isPhone: type == "phone")
@@ -123,6 +126,9 @@ class _PrivacyAndSecurityScreenState extends State<PrivacyAndSecurityScreen> {
                   color: AppTheme.gray.shade600),
             ),
             trailing: const Icon(Icons.chevron_right),
+            onTap: () {
+              showModal(context, "email");
+            },
           ),
           ListTile(
             leading: const Icon(Icons.vpn_key_outlined),
